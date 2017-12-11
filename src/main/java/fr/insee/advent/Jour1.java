@@ -13,9 +13,18 @@ public class Jour1 {
         Jour1 jour1 = new Jour1();
         System.out.println("Jour1");
         System.out.println("1. " + jour1.captcha1(input));
+        System.out.println("2. " + jour1.captcha2(input));
     }
 
     public int captcha1(String input) {
+        return this.captcha(input, 1);
+    }
+
+    public int captcha2(String input) {
+        return this.captcha(input, input.length() / 2);
+    }
+
+    public int captcha(String input, int step) {
         if(StringUtils.length(input) < 2) {
             return 0;
         }
@@ -23,7 +32,7 @@ public class Jour1 {
         int score = 0;
         for(int n = 0 ; n < length ; n ++) {
             char a = input.charAt(n);
-            char b = input.charAt((n + 1) % length);
+            char b = input.charAt((n + step) % length);
             if (a == b) {
                 score = score + this.charToInt(a);
             }
