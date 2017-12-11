@@ -6,3 +6,4 @@ target/
 *.class
 *.iml
 .idea/
+.git-credentials
