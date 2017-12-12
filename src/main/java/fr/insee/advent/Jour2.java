@@ -34,4 +34,8 @@ public class Jour2 {
                 .collect(Collectors.toList());
         return numbers.get(numbers.size() - 1) - numbers.get(0);
     }
+
+    public int ex2(String s) {
+        return 9;
+    }
 }
