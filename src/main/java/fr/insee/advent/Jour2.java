@@ -13,7 +13,7 @@ public class Jour2 {
 
     public int checksum1(String path) throws IOException {
         return Files.readAllLines(Paths.get(path)).stream()
-            .map(line -> line.split(" +"))
+            .map(line -> line.split(" +|\t+"))
             .mapToInt(this::diffMinMax)
             .sum();
     }
