@@ -14,7 +14,8 @@ public class Jour2 {
     public static void main(String[] args) throws IOException {
         Jour2 jour = new Jour2();
         System.out.println("Jour2");
-        System.out.println("1. " + jour.ex1("src/main/resources/input2"));
+        System.out.println("1. " + jour.ex1("src/main/resources/input21"));
+        System.out.println("2. " + jour.ex2("src/main/resources/input22"));
     }
 
     public int ex1(String path) throws IOException {
@@ -22,6 +23,13 @@ public class Jour2 {
             .map(line -> line.split(" +|\t+"))
             .mapToInt(this::diffMinMax)
             .sum();
+    }
+
+    public int ex2(String path) throws IOException {
+        return Files.readAllLines(Paths.get(path)).stream()
+                .map(line -> line.split(" +|\t+"))
+                .mapToInt(this::euclidianDivision)
+                .sum();
     }
 
     private int diffMinMax(String[] tokens) {
@@ -35,7 +43,23 @@ public class Jour2 {
         return numbers.get(numbers.size() - 1) - numbers.get(0);
     }
 
-    public int ex2(String s) {
-        return 9;
+    private int euclidianDivision(String[] tokens) {
+        if(CollectionUtils.size(tokens) < 2) {
+            return 0;
+        }
+        List<Integer> numbers = Arrays.stream(tokens)
+                .map(Integer::parseInt)
+                .sorted()
+                .collect(Collectors.toList());
+        for (int i = 0; i < numbers.size(); i ++) {
+            for (int j = i + 1; j < numbers.size(); j ++) {
+                int a = numbers.get(i);
+                int b = numbers.get(j);
+                if(b % a == 0) {
+                    return b / a;
+                }
+            }
+        }
+        return 0;
     }
 }
