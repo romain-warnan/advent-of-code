@@ -12,12 +12,12 @@ import java.util.stream.Collectors;
 public class Jour2 {
 
     public static void main(String[] args) throws IOException {
-        Jour2 jour2 = new Jour2();
+        Jour2 jour = new Jour2();
         System.out.println("Jour2");
-        System.out.println("1. " + jour2.checksum1("src/main/resources/input2"));
+        System.out.println("1. " + jour.ex1("src/main/resources/input2"));
     }
 
-    public int checksum1(String path) throws IOException {
+    public int ex1(String path) throws IOException {
         return Files.readAllLines(Paths.get(path)).stream()
             .map(line -> line.split(" +|\t+"))
             .mapToInt(this::diffMinMax)

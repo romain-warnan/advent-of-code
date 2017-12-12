@@ -10,17 +10,17 @@ public class Jour1 {
 
     public static void main(String[] args) throws IOException {
         String input = Files.readAllLines(Paths.get("src/main/resources/input1")).get(0);
-        Jour1 jour1 = new Jour1();
+        Jour1 jour = new Jour1();
         System.out.println("Jour1");
-        System.out.println("1. " + jour1.captcha1(input));
-        System.out.println("2. " + jour1.captcha2(input));
+        System.out.println("1. " + jour.ex1(input));
+        System.out.println("2. " + jour.ex2(input));
     }
 
-    public int captcha1(String input) {
+    public int ex1(String input) {
         return this.captcha(input, 1);
     }
 
-    public int captcha2(String input) {
+    public int ex2(String input) {
         return this.captcha(input, input.length() / 2);
     }
 
