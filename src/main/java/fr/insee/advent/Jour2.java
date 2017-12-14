@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 public class Jour2 {
@@ -18,18 +19,19 @@ public class Jour2 {
         System.out.println("2. " + jour.ex2("src/main/resources/input22"));
     }
 
-    public int ex1(String path) throws IOException {
+    public int sumLines(String path, ToIntFunction<String[]> function) throws IOException {
         return Files.readAllLines(Paths.get(path)).stream()
             .map(line -> line.split(" +|\t+"))
-            .mapToInt(this::diffMinMax)
+            .mapToInt(function)
             .sum();
+    }
+    
+    public int ex1(String path) throws IOException {
+        return this.sumLines(path, this::diffMinMax);
     }
 
     public int ex2(String path) throws IOException {
-        return Files.readAllLines(Paths.get(path)).stream()
-                .map(line -> line.split(" +|\t+"))
-                .mapToInt(this::euclidianDivision)
-                .sum();
+        return this.sumLines(path, this::euclidianDivision);
     }
 
     private int diffMinMax(String[] tokens) {
@@ -42,7 +44,7 @@ public class Jour2 {
                 .collect(Collectors.toList());
         return numbers.get(numbers.size() - 1) - numbers.get(0);
     }
-
+    
     private int euclidianDivision(String[] tokens) {
         if(CollectionUtils.size(tokens) < 2) {
             return 0;
