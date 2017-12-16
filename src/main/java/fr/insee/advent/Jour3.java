@@ -1,44 +1,67 @@
 package fr.insee.advent;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class Jour3 {
 
     public static void main(String[] args) throws IOException {
         Jour3 jour = new Jour3();
-        System.out.println(jour.rank(26));
         System.out.println("Jour3");
-        System.out.println("1. " + jour.ex1(1));
+        System.out.println("1. " + jour.ex1(325489));
     }
 	
-	public int ex1(int p) {
-		int n = this.rank(p);
-		Point point = new Point(n);
-		int start = 8 * n + 2;
-		for(int k = start; k <= p; k ++) {
-			
-		}
-		return 0;
-	}
-	
-	private int rank(int p) {
-		if(p == 1) {
+	public long ex1(long p) {
+		if (p == 1) {
 			return 0;
 		}
-		if(p < 10) {
-			return 1;
+		long n = this.rank(p);
+		Point point = new Point(n);
+		long start = this.start(n + 1);
+		for(long k = start + 1; k <= p; k ++) {
+			if (k < start + 2 * n) {
+				point.up();
+			}
+			else if (k < start + 4 * n) {
+				point.left();
+			}
+			else if (k < start + 6 * n) {
+				point.down();
+			}
+			else {
+				point.right();
+			}
 		}
-		int n = 1;
-		while ((8 * n + 2) > p || (16 * n + 9) < p) {
+		return point.manhattan();
+	}
+	
+	private long rank(long p) {
+		if (p == 1) {
+			return 0;
+		}
+		long n = 1;
+		while (this.start(n) > p || p > this.end(n)) {
 			n ++;
 		}
-		return n + 1;
+		return n - 1;
+	}
+	
+	private long start(long n) {
+		return IntStream.iterate(0, k -> k + 8)
+		.limit(n - 1)
+		.sum() + 2;
+	}
+	
+	private long end(long n) {
+		return IntStream.iterate(0, k -> k + 8)
+		.limit(n)
+		.sum() + 1;
 	}
 	
 	static class Point {
-		int x, y;
+		long x, y;
 		
-		public Point(int n) {
+		public Point(long n) {
 			x = n;
 			y = 1 - n;
 		}
@@ -59,7 +82,7 @@ public class Jour3 {
 			x = x - 1;
 		}
 		
-		public int manhattan() {
+		public long manhattan() {
 			return Math.abs(x) + Math.abs(y);
 		}
 	}
