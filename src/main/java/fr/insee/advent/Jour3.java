@@ -14,11 +14,30 @@ public class Jour3 {
 		System.out.println("2. " + jour.ex2(325489));
 	}
 
-	public long ex1(long p) {
-		if (p == 1) {
+	public long ex1(long input) {
+		if (input == 1) {
 			return 0;
 		}
-		return this.point(p).manhattan();
+		return this.point(input).manhattan();
+	}
+
+	public long ex2(long input) {
+		if (input == 1) {
+			return 1;
+		}
+		List<Point> points = new ArrayList<>();
+		points.add(this.firstPoint());
+		for (int rank = 1; rank < input; rank++) {
+			for (long index = this.start(rank); index <= this.end(rank); index++) {
+				Point point = this.point(index);
+				point.value = this.computeValue(point, points);
+				points.add(point);
+				if (point.value >= input) {
+					return point.value;
+				}
+			}
+		}
+		return 0;
 	}
 
 	private Point point(long index) {
@@ -58,25 +77,6 @@ public class Jour3 {
 		point.x = 0L;
 		point.y = 0L;
 		return point;
-	}
-	
-	public long ex2(long input) {
-		if (input == 1) {
-			return 1;
-		}
-		List<Point> points = new ArrayList<>();
-		points.add(this.firstPoint());
-		for (int rank = 1; rank < 10; rank++) {
-			for (long index = this.start(rank); index <= this.end(rank); index ++) {
-				Point point = this.point(index);
-				point.value = this.computeValue(point, points);
-				points.add(point);
-				if (point.value >= input) {
-					return point.value;
-				}
-			}
-		}
-		return 0;
 	}
 
 	private long rank(long p) {
