@@ -11,6 +11,7 @@ public class Jour6 {
 		Jour6 jour = new Jour6();
 		System.out.println("Jour6");
 		System.out.println("1. " + jour.ex1("11 11 13 7 0 15 5 5 4 4 1 1 7 1 15 11"));
+		System.out.println("1. " + jour.ex2("11 11 13 7 0 15 5 5 4 4 1 1 7 1 15 11"));
 	}
 
 	public long ex1(String input) {
@@ -22,6 +23,21 @@ public class Jour6 {
 			Memory memory = this.reallocate(memories.get(memories.size() - 1));
 			if (memories.contains(memory)) {
 				return n;
+			}
+			memories.add(memory);
+		}
+	}
+	
+	public long ex2(String input) {
+		List<Memory> memories = new ArrayList<>();
+		memories.add(this.firstMemory(input));
+		int n = 0;
+		while (true) {
+			n ++;
+			Memory memory = this.reallocate(memories.get(memories.size() - 1));
+			int firstIndex = memories.indexOf(memory);
+			if (firstIndex > -1) {
+				return n - firstIndex;
 			}
 			memories.add(memory);
 		}

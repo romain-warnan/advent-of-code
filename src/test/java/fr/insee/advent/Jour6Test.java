@@ -10,4 +10,10 @@ public class Jour6Test {
         Jour6 jour = new Jour6();
         Assert.assertEquals(5, jour.ex1("0 2 7 0"));
     }
+    
+    @Test
+    public void test2() throws Exception {
+        Jour6 jour = new Jour6();
+        Assert.assertEquals(4, jour.ex2("0 2 7 0"));
+    }
 }
