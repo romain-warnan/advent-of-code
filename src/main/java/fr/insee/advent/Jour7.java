@@ -20,17 +20,46 @@ public class Jour7 {
 	}
 	
 	public String ex1(String path) throws IOException {
-		List<Program> programs = Files.readAllLines(Paths.get(path))
-			.stream()
-			.map(Program::fromLine)
-			.collect(Collectors.toList());
-		Program program = programs.stream()
-			.filter(p -> p.isFirstAncestor(programs))
-			.findFirst()
-			.get();
-		return program.name;
+		List<Program> programs = Programs.findAll(path);
+		Program firstAncestor = Programs.findFirstAncestor(programs);
+		return firstAncestor.name;
 	}
 
+	public abstract static class Programs {
+		
+		public static List<Program> findAll(String path) throws IOException{
+			return Files.readAllLines(Paths.get(path))
+				.stream()
+				.map(Program::fromLine)
+				.collect(Collectors.toList());
+		}
+		
+		public static Program findFirstAncestor(List<Program> programs) {
+			return programs.stream()
+				.filter(p -> p.isFirstAncestor(programs))
+				.findFirst()
+				.get();
+		}
+		
+		public static Program findByName(String name, List<Program> programs){
+			return programs.stream()
+				.filter(p -> p.name.equals(name))
+				.findFirst()
+				.get();
+		}
+		
+		public static boolean isBalanced(Program program, List<Program> programs){
+			if (program.hasChildren()) {
+				return program.children.stream()
+					.map(name -> Programs.findByName(name, programs))
+					.map(prog -> prog.weight)
+					.distinct()
+					.count() == 1;
+			}
+			return true;
+		}
+	}
+	
 	public static class Program {
 
 		String name;
@@ -86,8 +115,5 @@ public class Jour7 {
 		public String toString() {
 			return name + " (" + weight + ") " + (this.hasChildren() ? "-> " + Arrays.toString(children.toArray()) : "");
 		}
-
-		
-		
 	}
 }
