@@ -5,13 +5,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 public class Jour6 {
 
 	public static void main(String[] args) throws IOException {
 		Jour6 jour = new Jour6();
 		System.out.println("Jour6");
-		System.out.println("1. " + jour.ex1("11 11 13 7 0 15 5 5 4 4 1 1 7 1 15 11"));
-		System.out.println("1. " + jour.ex2("11 11 13 7 0 15 5 5 4 4 1 1 7 1 15 11"));
+		String input = "11 11 13 7 0 15 5 5 4 4 1 1 7 1 15 11";
+		System.out.println("1. " + jour.ex1(input));
+		System.out.println("1. " + jour.ex2(input));
 	}
 
 	public long ex1(String input) {
@@ -58,21 +61,12 @@ public class Jour6 {
 	private int[] reallocate(int[] input) {
 		int[] banks = Arrays.copyOf(input, input.length);
 		int max = Arrays.stream(banks).max().getAsInt();
-		int indexOfMax = this.firstIndexOf(banks, max);
+		int indexOfMax = ArrayUtils.indexOf(banks, max);
 		banks[indexOfMax] = 0;
 		for (int n = 0; n < max; n++) {
 			banks[(indexOfMax + n + 1) % banks.length] ++;
 		}
 		return banks;
-	}
-
-	private int firstIndexOf(int[] array, int number) {
-		for (int n = 0; n < array.length; n++) {
-			if (array[n] == number) {
-				return n;
-			}
-		}
-		return -1;
 	}
 	
 	public static class Memory {
