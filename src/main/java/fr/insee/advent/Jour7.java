@@ -107,7 +107,7 @@ public class Jour7 {
 		public boolean isBalanced(){
 			if (this.hasChildren()) {
 				return this.children.stream()
-					.map(Program::totalWeight)
+					.map(Program::supportedWeight)
 					.distinct()
 					.count() == 1;
 			}
@@ -122,6 +122,10 @@ public class Jour7 {
 						
 			}
 			return this.weight;
+		}
+		
+		public int supportedWeight() {
+			return this.totalWeight() - this.weight;
 		}
 		
 		@Override
