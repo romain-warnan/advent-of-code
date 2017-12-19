@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ public class Jour7 {
 		Jour7 jour = new Jour7();
 		System.out.println("Jour7");
 		System.out.println("1. " + jour.ex1("src/main/resources/input7"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input7"));
 	}
 	
 	public String ex1(String path) throws IOException {
@@ -24,6 +26,12 @@ public class Jour7 {
 		return firstAncestor.name;
 	}
 
+	public int ex2(String path) throws IOException {
+		Programs programs = Programs.of(path).fill();
+		Program lastUnbalanced = programs.findLastUnbalanced();
+	   return programs.idealWeight(lastUnbalanced);
+	}
+	
 	public static class Programs {
 		
 		private List<Program> programs;
@@ -74,6 +82,29 @@ public class Jour7 {
     			.filter(p -> p.isLastDescendant(programs))
     			.findFirst()
     			.get();
+		}
+		
+		public int idealWeight(Program lastUnbalanced) {
+			List<Integer> weights = lastUnbalanced.children.stream()
+				.map(Program::totalWeight)
+				.collect(Collectors.toList());
+			int min = Collections.min(weights);
+			int max = Collections.max(weights);
+			long nbMin = lastUnbalanced.children.stream()
+				.filter(child -> child.totalWeight() == min)
+				.count();
+			if (nbMin == 1) {
+				Program faultyProgram = lastUnbalanced.children.stream()
+					.filter(child -> child.totalWeight() == min)
+					.findFirst()
+					.get();
+				return faultyProgram.weight + (max - min);
+			}
+			Program faultyProgram = lastUnbalanced.children.stream()
+				.filter(child -> child.totalWeight() == max)
+				.findFirst()
+				.get();
+			return faultyProgram.weight - (max - min);
 		}
 	}
 	
