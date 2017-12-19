@@ -70,22 +70,10 @@ public class Jour7 {
 			List<Program> programs = this.programs.stream()
 				.filter(Program::isUnbalanced)
 				.collect(Collectors.toList());
-			
-			System.out.println(this.programs.stream().filter(Program::isUnbalanced).count());
-			// this.programs.stream().filter(Program::isUnbalanced).forEach(System.out::println);
-			
-			System.out.println(programs.stream().filter(p -> p.isLastDescendant(programs)).count());
-//			programs.stream().filter(p -> p.isLastDescendant(programs)).forEach(System.out::println);
-//			return programs.stream()
-//				.filter(p -> p.isLastDescendant(programs))
-//				.findFirst()
-//				.get();
-			for(Program program : programs) {
-				if(program.isLastDescendant(programs)) {
-					return program;
-				}
-			}
-			return null;
+			return programs.stream()
+    			.filter(p -> p.isLastDescendant(programs))
+    			.findFirst()
+    			.get();
 		}
 	}
 	
