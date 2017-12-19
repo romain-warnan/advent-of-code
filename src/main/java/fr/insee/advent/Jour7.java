@@ -66,16 +66,6 @@ public class Jour7 {
 				.findFirst()
 				.get();
 		}
-		
-		public boolean isBalanced(Program program){
-			if (program.hasChildren()) {
-				return program.children.stream()
-					.map(prog -> prog.weight)
-					.distinct()
-					.count() == 1;
-			}
-			return true;
-		}
 	}
 	
 	public static class Program {
@@ -114,6 +104,26 @@ public class Jour7 {
 				.noneMatch(p -> p.name.equals(this.name));
 		}
 
+		public boolean isBalanced(){
+			if (this.hasChildren()) {
+				return this.children.stream()
+					.map(Program::totalWeight)
+					.distinct()
+					.count() == 1;
+			}
+			return true;
+		}
+		
+		public int totalWeight() {
+			if (this.hasChildren()) {
+				return this.children.stream()
+					.mapToInt(Program::totalWeight)
+					.sum();
+						
+			}
+			return this.weight;
+		}
+		
 		@Override
 		public int hashCode() {
 			return Objects.hashCode(this.name);
