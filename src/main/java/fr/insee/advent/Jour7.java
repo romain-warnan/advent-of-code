@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,6 +65,28 @@ public class Jour7 {
 				.findFirst()
 				.get();
 		}
+		
+		public Program findLastUnbalanced() {
+			List<Program> programs = this.programs.stream()
+				.filter(Program::isUnbalanced)
+				.collect(Collectors.toList());
+			
+			System.out.println(this.programs.stream().filter(Program::isUnbalanced).count());
+			// this.programs.stream().filter(Program::isUnbalanced).forEach(System.out::println);
+			
+			System.out.println(programs.stream().filter(p -> p.isLastDescendant(programs)).count());
+//			programs.stream().filter(p -> p.isLastDescendant(programs)).forEach(System.out::println);
+//			return programs.stream()
+//				.filter(p -> p.isLastDescendant(programs))
+//				.findFirst()
+//				.get();
+			for(Program program : programs) {
+				if(program.isLastDescendant(programs)) {
+					return program;
+				}
+			}
+			return null;
+		}
 	}
 	
 	public static class Program {
@@ -77,6 +98,7 @@ public class Jour7 {
 		public Program() {
 			this.children = new ArrayList<>();
 		}
+
 
 		public static Program fromLine(String line) {
 			Program program = new Program();
@@ -101,46 +123,54 @@ public class Jour7 {
 		public boolean isFirstAncestor(List<Program> programs) {
 			return programs.stream()
 				.flatMap(p -> p.children.stream())
-				.noneMatch(p -> p.name.equals(this.name));
+				.noneMatch(this::equals);
+		}
+		
+		public boolean isLastDescendant(List<Program> programs) {
+			return this.children.stream()
+				.noneMatch(child -> programs.contains(child));
 		}
 
 		public boolean isBalanced(){
 			if (this.hasChildren()) {
 				return this.children.stream()
-					.map(Program::supportedWeight)
+					.map(Program::totalWeight)
 					.distinct()
 					.count() == 1;
 			}
 			return true;
 		}
 		
+		public boolean isUnbalanced(){
+			return !this.isBalanced();
+		}
+		
 		public int totalWeight() {
 			if (this.hasChildren()) {
 				return this.children.stream()
 					.mapToInt(Program::totalWeight)
-					.sum();
+					.sum() + this.weight;
 						
 			}
 			return this.weight;
 		}
 		
-		public int supportedWeight() {
-			return this.totalWeight() - this.weight;
-		}
-		
 		@Override
 		public int hashCode() {
-			return Objects.hashCode(this.name);
+			return this.name.hashCode();
 		}
 
 		@Override
 		public boolean equals(Object object) {
 			if (object instanceof Program) {
 				Program other = (Program) object;
-				this.name.equals(other.name);
+				return this.name.equals(other.name);
 			}
 			return false;
 		}
+		
+		
+		
 
 		@Override
 		public String toString() {
