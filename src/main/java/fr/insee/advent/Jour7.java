@@ -20,38 +20,56 @@ public class Jour7 {
 	}
 	
 	public String ex1(String path) throws IOException {
-		List<Program> programs = Programs.findAll(path);
-		Program firstAncestor = Programs.findFirstAncestor(programs);
+		Programs programs = Programs.of(path).fill();
+		Program firstAncestor = programs.findFirstAncestor();
 		return firstAncestor.name;
 	}
 
-	public abstract static class Programs {
+	public static class Programs {
 		
-		public static List<Program> findAll(String path) throws IOException{
-			return Files.readAllLines(Paths.get(path))
+		private List<Program> programs;
+		
+		private Programs(){}
+		
+		public static Programs of(String path) throws IOException {
+			Programs instance = new Programs();
+			instance.programs = Files.readAllLines(Paths.get(path))
 				.stream()
 				.map(Program::fromLine)
 				.collect(Collectors.toList());
+			return instance;
+		}
+
+		public Programs fill() {
+			for (Program program : this.programs) {
+				program.children = program.children.stream()
+					.map(child -> this.findByName(child.name))
+					.collect(Collectors.toList());
+			}
+			return this;
 		}
 		
-		public static Program findFirstAncestor(List<Program> programs) {
-			return programs.stream()
+		public List<Program> findAll() throws IOException{
+			return this.programs;
+		}
+		
+		public Program findFirstAncestor() {
+			return this.programs.stream()
 				.filter(p -> p.isFirstAncestor(programs))
 				.findFirst()
 				.get();
 		}
 		
-		public static Program findByName(String name, List<Program> programs){
-			return programs.stream()
+		public Program findByName(String name){
+			return this.programs.stream()
 				.filter(p -> p.name.equals(name))
 				.findFirst()
 				.get();
 		}
 		
-		public static boolean isBalanced(Program program, List<Program> programs){
+		public boolean isBalanced(Program program){
 			if (program.hasChildren()) {
 				return program.children.stream()
-					.map(name -> Programs.findByName(name, programs))
 					.map(prog -> prog.weight)
 					.distinct()
 					.count() == 1;
@@ -64,7 +82,7 @@ public class Jour7 {
 
 		String name;
 		Integer weight;
-		List<String> children;
+		List<Program> children;
 
 		public Program() {
 			this.children = new ArrayList<>();
@@ -78,7 +96,9 @@ public class Jour7 {
 			if (tokens.length > 2) {
 				for (int n = 3; n < tokens.length; n++) {
 					String name = tokens[n].replace(",", "");
-					program.children.add(name);
+					Program child = new Program();
+					child.name = name;
+					program.children.add(child);
 				}
 			}
 			return program;
@@ -89,12 +109,9 @@ public class Jour7 {
 		}
 
 		public boolean isFirstAncestor(List<Program> programs) {
-			for (Program program : programs) {
-				if (program.children.contains(this.name)) {
-					return false;
-				}
-			}
-			return true;
+			return programs.stream()
+				.flatMap(p -> p.children.stream())
+				.noneMatch(p -> p.name.equals(this.name));
 		}
 
 		@Override
@@ -113,7 +130,7 @@ public class Jour7 {
 
 		@Override
 		public String toString() {
-			return name + " (" + weight + ") " + (this.hasChildren() ? "-> " + Arrays.toString(children.toArray()) : "");
+			return name + " (" + weight + ") " + (this.hasChildren() ? "-> " + Arrays.toString(children.stream().map(child -> child.name).toArray()) : "");
 		}
 	}
 }
