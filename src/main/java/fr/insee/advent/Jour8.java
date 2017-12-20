@@ -12,6 +12,8 @@ public class Jour8 {
 		Jour8 jour = new Jour8();
 		System.out.println("Jour8");
 		System.out.println("1. " + jour.ex1("src/main/resources/input8"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input8"));
+		
 	}
 	
 	public long ex1(String path) throws IOException {
@@ -23,6 +25,16 @@ public class Jour8 {
 		return stack.maxValue();
 	}
 
+	public long ex2(String path) throws IOException {
+		Stack stack = new Stack();
+		return Files.readAllLines(Paths.get(path))
+			.stream()
+			.map(Instruction::fromLine)
+			.mapToLong(stack::operate)
+			.max()
+			.getAsLong();
+	}
+	
 	public static enum Op {
 		inc, dec
 	}
@@ -39,7 +51,7 @@ public class Jour8 {
 			return value == null ? 0 : value;
 		}
 		
-		public void operate(Instruction instruction) {
+		public Long operate(Instruction instruction) {
 			if(instruction.evaluateCondition(this)) {
 				Long value = this.valueOf(instruction.variable);
 				switch (instruction.op) {
@@ -52,6 +64,7 @@ public class Jour8 {
 				}
 				this.variables.put(instruction.variable, value);
 			}
+			return this.valueOf(instruction.variable);
 		}
 		
 		public Long maxValue() {
