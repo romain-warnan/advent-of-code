@@ -35,10 +35,6 @@ public class Jour8 {
 			.getAsLong();
 	}
 	
-	public static enum Op {
-		inc, dec
-	}
-	
 	public static class Stack {
 		private Map<String, Long> variables;
 		
