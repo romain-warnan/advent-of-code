@@ -16,6 +16,7 @@ public class Jour9 {
 	
 	public long ex1(String input) {
 		this.removeAllGarbage(input);
+		System.out.println(this.removeAllGarbage(input));
 		return -1;
 	}
 	
@@ -36,7 +37,7 @@ public class Jour9 {
 				n ++;
 			}
 			else {
-				if(ch == '<') {
+				if(beginIndex < 0 && ch == '<') {
 					beginIndex = n;
 				}
 				if(beginIndex >= 0 && ch == '>') {
