@@ -13,7 +13,6 @@ public class Jour8 {
 		System.out.println("Jour8");
 		System.out.println("1. " + jour.ex1("src/main/resources/input8"));
 		System.out.println("2. " + jour.ex2("src/main/resources/input8"));
-		
 	}
 	
 	public long ex1(String path) throws IOException {
