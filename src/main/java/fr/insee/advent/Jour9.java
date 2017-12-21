@@ -15,12 +15,28 @@ public class Jour9 {
 	}
 	
 	public long ex1(String input) {
-		this.removeAllGarbage(input);
-		System.out.println(this.removeAllGarbage(input));
-		return -1;
+		return this.score(input);
 	}
 	
-	public String removeAllGarbage(String input) {
+	private long score(String input) {
+		input = this.removeAllGarbage(input);
+		input = input.replace(",", "");
+		char[] chars = input.toCharArray();
+		int depth = 0, score = 0;
+		for (int n = 0; n < chars.length; n++) {
+			char ch = chars[n];
+			if(ch == '{') {
+				depth ++;
+				score = score + depth; 
+			}
+			else if (ch == '}') {
+				depth --;
+			}
+		}
+		return score;
+	}
+	
+	private String removeAllGarbage(String input) {
 		String output = this.removeFirstGarbage(input);
 		if(output.equals(input)) {
 			return output;
@@ -47,8 +63,7 @@ public class Jour9 {
 			}
 		}
 		if(endIndex >= 0) {
-    		String garbage = input.substring(beginIndex, endIndex);
-    		return input.replace(garbage, "");
+    		return input.substring(0, beginIndex) + input.substring(endIndex);
 		}
 		return input;
 	}
