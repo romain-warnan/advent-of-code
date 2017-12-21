@@ -16,7 +16,6 @@ public class Jour9 {
 		String input = Files.newBufferedReader(Paths.get("src/main/resources/input9")).readLine();
 		System.out.println("1. " + jour.ex1(input));
 		System.out.println("2. " + jour.ex2(input));
-		
 	}
 	
 	public long ex1(String input) {
