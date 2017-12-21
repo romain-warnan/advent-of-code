@@ -3,6 +3,10 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class Jour9 {
 
@@ -11,12 +15,38 @@ public class Jour9 {
 		System.out.println("Jour9");
 		String input = Files.newBufferedReader(Paths.get("src/main/resources/input9")).readLine();
 		System.out.println("1. " + jour.ex1(input));
-		
+		System.out.println("2. " + jour.ex2(input));
 	}
 	
 	public long ex1(String input) {
 		return this.score(input);
 	}
+	
+	public long ex2(String input) {
+		return this.garbages(input).stream()
+			.mapToLong(this::nonCanceledChars)
+			.sum();
+	}
+	
+	private long score(String input) {
+		input = this.removeAllGarbage(input);
+		input = input.replace(",", "");
+		char[] chars = input.toCharArray();
+		int depth = 0, score = 0;
+		for (int n = 0; n < chars.length; n++) {
+			char ch = chars[n];
+			if(ch == '{') {
+				depth ++;
+				score = score + depth; 
+			}
+			else if (ch == '}') {
+				depth --;
+			}
+		}
+		return score;
+	}
+	
+	
 	
 	private String removeAllGarbage(String input) {
 		String output = this.removeFirstGarbage(input);
@@ -24,25 +54,6 @@ public class Jour9 {
 			return output;
 		}
 		return this.removeAllGarbage(output);
-	}
-	
-	private long score(String input) {
-		input = this.removeAllGarbage(input);
-		input = input.replace(",", "");
-		System.out.println(input);
-		char[] chars = input.toCharArray();
-		int depth = 0, score = 0;
-		for (int n = 0; n < chars.length; n++) {
-			char ch = chars[n];
-			if (ch == '{') {
-				depth ++;
-				score = score + depth;
-			}
-			else if (ch == '}') {
-				depth --;
-			}
-		}
-		return score;
 	}
 	
 	private String removeFirstGarbage(String input) {
@@ -67,5 +78,49 @@ public class Jour9 {
     		return input.substring(0, beginIndex) + input.substring(endIndex);
 		}
 		return input;
+	}
+	
+	private List<String> garbages(String input) {
+		List<String> garbages = new ArrayList<>();
+		char[] chars = input.toCharArray();
+		int beginIndex = -1, endIndex = -1;
+		for (int n = 0; n < chars.length; n++) {
+			char ch = chars[n];
+			if(ch == '!') {
+				n ++;
+			}
+			else {
+				if(beginIndex < 0 && ch == '<') {
+					beginIndex = n;
+				}
+				if(beginIndex >= 0 && ch == '>') {
+					endIndex = n + 1;
+				}
+			}
+			if (endIndex > 0) {
+				garbages.add(input.substring(beginIndex, endIndex));
+				beginIndex = -1;
+				endIndex = -1;
+			}
+		}
+		
+		return garbages;
+	}
+	
+	private long nonCanceledChars(String garbage) {
+		garbage = StringUtils.removeStart(garbage, "<");
+		garbage = StringUtils.removeEnd(garbage, ">");
+		char[] chars = garbage.toCharArray();
+		int score = 0;
+		for (int n = 0; n < chars.length; n++) {
+			char ch = chars[n];
+			if(ch == '!') {
+				n ++;
+			}
+			else {
+				score ++;
+			}
+		}
+		return score;
 	}
 }
