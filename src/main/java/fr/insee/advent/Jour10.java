@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -17,26 +16,26 @@ public class Jour10 {
 	}
 	
 	public long ex1(int size, String input) {
-		List<Integer> marks = IntStream.range(0, 256)
-			.mapToObj(n -> n)
+		List<Integer> marks = IntStream.range(0, size)
+			.boxed()
 			.collect(Collectors.toList());
-		List<Integer> numbers = Arrays.stream(input.split(","))
+		List<Integer> lengths = Arrays.stream(input.split(","))
 			.map(Integer::valueOf)
 			.collect(Collectors.toList());
 		int index = 0;
-		for (int skip = 0; skip <= 0; skip ++) {
-//		for (int skip = 0; skip < numbers.size(); skip ++) {
+		for (int skip = 0; skip < lengths.size(); skip ++) {
 			List<Integer> copyOfMarks = new ArrayList<>(marks);
-			int length = numbers.get(skip);
-			for (int p = 0; p < size; p ++) {
-				if(index <= p && p < index + length) {
-					marks.set(index, copyOfMarks.get(length - p));
-				}
+			int length = lengths.get(skip);
+			List<Integer> numbers = IntStream.iterate(index, i -> (i + 1) % size)
+				.limit(length)
+				.boxed()
+				.collect(Collectors.toList());
+			for(int n = 0; n < numbers.size(); n ++) {
+				marks.set(numbers.get(n), copyOfMarks.get(numbers.get(numbers.size() - n - 1)));
 			}
-			index = (index + skip) % size;
+			index = (index + length + skip) % size;
 		}
-		System.out.println(marks);
-		return 0L;
+		return marks.get(0) * marks.get(1);
 	}
 
 }
