@@ -38,4 +38,17 @@ public class Jour10 {
 		return marks.get(0) * marks.get(1);
 	}
 
+	private final int[] SUFFIX = new int[] {17, 31, 73, 47, 23};
+	
+	public int[] toAscii(String input) {
+		return input.chars().toArray();
+	}
+
+	public int[] addSuffix(int[] codes) {
+		int[] codesWhithSuffix = Arrays.copyOf(codes, codes.length + SUFFIX.length);
+		for (int n = 0; n < SUFFIX.length; n ++) {
+			codesWhithSuffix[codes.length + n] = SUFFIX[n];
+		}
+		return codesWhithSuffix;
+	}
 }
