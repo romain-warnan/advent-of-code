@@ -23,12 +23,15 @@ public class Jour10 {
 		return marks.get(0) * marks.get(1);
 	}
 	
-	public long ex2(int size, String input) {
+	public String ex2(int size, String input) {
 		List<Integer> marks = this.marks(size);
 		List<Integer> lengths = this.lengths2(input);
 		this.rounds(lengths, marks, size, 64);
 		List<Integer> hashes = this.hashes(size, marks);
-		return 0L;
+		return hashes.stream()
+			.map(Integer::toHexString)
+			.map(h -> h.length() == 1 ? "0" + h : h)
+			.collect(Collectors.joining());
 	}
 
 	private List<Integer> hashes(int size, List<Integer> marks) {
@@ -59,7 +62,9 @@ public class Jour10 {
 	}
 	
 	private List<Integer> lengths2(String input) {
-		return Arrays.stream(this.addSuffix(this.toAscii(input))).boxed().collect(Collectors.toList());
+		return Arrays.stream(this.addSuffix(this.toAscii(input)))
+			.boxed()
+			.collect(Collectors.toList());
 	}
 	
 	private void rounds(List<Integer> lengths, List<Integer> marks, int size, int iterations) {
@@ -83,17 +88,15 @@ public class Jour10 {
 	
 	private final int[] SUFFIX = new int[] {17, 31, 73, 47, 23};
 	
-	public int[] toAscii(String input) {
+	private int[] toAscii(String input) {
 		return input.chars().toArray();
 	}
 
-	public int[] addSuffix(int[] codes) {
+	private int[] addSuffix(int[] codes) {
 		int[] codesWhithSuffix = Arrays.copyOf(codes, codes.length + SUFFIX.length);
 		for (int n = 0; n < SUFFIX.length; n ++) {
 			codesWhithSuffix[codes.length + n] = SUFFIX[n];
 		}
 		return codesWhithSuffix;
 	}
-	
-	
 }
