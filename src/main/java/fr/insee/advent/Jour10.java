@@ -22,18 +22,20 @@ public class Jour10 {
 		List<Integer> lengths = Arrays.stream(input.split(","))
 			.map(Integer::valueOf)
 			.collect(Collectors.toList());
-		int index = 0;
-		for (int skip = 0; skip < lengths.size(); skip ++) {
+		int position = 0;
+		int skipSize = 0;
+		for (int lengthRank = 0; lengthRank < lengths.size(); lengthRank ++) {
 			List<Integer> copyOfMarks = new ArrayList<>(marks);
-			int length = lengths.get(skip);
-			List<Integer> numbers = IntStream.iterate(index, i -> (i + 1) % size)
+			int length = lengths.get(lengthRank);
+			List<Integer> indexes = IntStream.iterate(position, i -> (i + 1) % size)
 				.limit(length)
 				.boxed()
 				.collect(Collectors.toList());
-			for(int n = 0; n < numbers.size(); n ++) {
-				marks.set(numbers.get(n), copyOfMarks.get(numbers.get(numbers.size() - n - 1)));
+			for(int n = 0; n < indexes.size(); n ++) {
+				marks.set(indexes.get(n), copyOfMarks.get(indexes.get(indexes.size() - n - 1)));
 			}
-			index = (index + length + skip) % size;
+			position = (position + length + skipSize) % size;
+			skipSize ++;
 		}
 		return marks.get(0) * marks.get(1);
 	}
