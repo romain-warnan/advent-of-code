@@ -27,7 +27,23 @@ public class Jour10 {
 		List<Integer> marks = this.marks(size);
 		List<Integer> lengths = this.lengths2(input);
 		this.rounds(lengths, marks, size, 64);
-		return marks.get(0) * marks.get(1);
+		List<Integer> hashes = this.hashes(size, marks);
+		return 0L;
+	}
+
+	private List<Integer> hashes(int size, List<Integer> marks) {
+		List<Integer> hashes = new ArrayList<>();
+		for (int n = 0; n < size; n ++) {
+			if (n % 16 == 0) {
+				hashes.add(marks.get(n));
+			}
+			else {
+				int index = n / 16;
+				int hash = hashes.get(index) ^ marks.get(n);
+				hashes.set(index, hash);
+			}
+		}
+		return hashes;
 	}
 
 	private List<Integer> marks(int size) {
@@ -78,4 +94,6 @@ public class Jour10 {
 		}
 		return codesWhithSuffix;
 	}
+	
+	
 }
