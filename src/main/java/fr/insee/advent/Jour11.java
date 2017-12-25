@@ -16,10 +16,24 @@ public class Jour11 {
 		System.out.println("Jour11");
 		String input = Files.newBufferedReader(Paths.get("src/main/resources/input11")).readLine();
 		System.out.println("1. " + jour.ex1(input));
+		System.out.println("2. " + jour.ex2(input));
 	}
 	
 	public long ex1(String input) {
-		Map<String, Long> map = Arrays.stream(input.split(","))
+		return this.distance(input.split(","));
+	}
+	
+	public long ex2(String input) {
+		long max = 0;
+		String[] steps = input.split(",");
+		for (int n = 1; n < steps.length; n ++) {
+			max = Math.max(max, this.distance(Arrays.copyOfRange(steps, 0, n)));
+		}
+		return max;
+	}
+	
+	private long distance(String[] steps) {
+		Map<String, Long> map = Arrays.stream(steps)
 			.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 		long s = Optional.ofNullable(map.get("s")).orElse(0L) -  Optional.ofNullable(map.get("n")).orElse(0L);
 		long se = Optional.ofNullable(map.get("se")).orElse(0L) -  Optional.ofNullable(map.get("nw")).orElse(0L);
