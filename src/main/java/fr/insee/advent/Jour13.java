@@ -2,6 +2,7 @@ package fr.insee.advent;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,6 +13,7 @@ public class Jour13 {
 		Jour13 jour = new Jour13();
 		System.out.println("Jour13");
 		System.out.println("1. " + jour.ex1("src/main/resources/input13"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input13"));
 	}
 	
 	public long ex1(String path) throws Exception {
@@ -20,6 +22,30 @@ public class Jour13 {
 			firewall.nextStep();
 		}
 		return firewall.severity;
+	}
+	
+	public long ex2(String path) throws Exception {
+		Map<Integer, Layer> layers = Files.readAllLines(Paths.get(path))
+			.stream()
+			.map(Layer::fromLine)
+			.collect(Collectors.toMap(layer -> layer.depth, Function.identity()));
+		int delay = 10;
+		while (true) {
+			boolean caught = false;
+			for (int pico = 0; pico < 100; pico ++) {
+				Layer layer = layers.get(pico);
+				if (layer != null) {
+					if ((pico + delay) % (2 * layer.range - 2) == 0) {
+						caught = true;
+						break;
+					}
+				}
+			}
+			if (!caught) {
+				return delay;
+			}
+			delay ++;
+		}
 	}
 
 	private static class Layer {
