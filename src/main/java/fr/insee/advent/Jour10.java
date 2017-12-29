@@ -17,24 +17,32 @@ public class Jour10 {
 	}
 	
 	public long ex1(int size, String input) {
-		List<Integer> marks = this.marks(size);
-		List<Integer> lengths = this.lengths1(input);
-		this.rounds(lengths, marks, size, 1);
+		List<Integer> marks = marks(size);
+		List<Integer> lengths = lengths1(input);
+		rounds(lengths, marks, size, 1);
 		return marks.get(0) * marks.get(1);
 	}
 	
 	public String ex2(int size, String input) {
-		List<Integer> marks = this.marks(size);
-		List<Integer> lengths = this.lengths2(input);
-		this.rounds(lengths, marks, size, 64);
-		List<Integer> hashes = this.hashes(size, marks);
+		return hashKnot(size, input);
+	}
+
+	public static String hashKnot(String input) {
+		return hashKnot(256, input);
+	}
+	
+	private static String hashKnot(int size, String input) {
+		List<Integer> marks = marks(size);   
+		List<Integer> lengths = lengths2(input);
+		rounds(lengths, marks, size, 64);
+		List<Integer> hashes = hashes(size, marks);
 		return hashes.stream()
 			.map(Integer::toHexString)
 			.map(h -> h.length() == 1 ? "0" + h : h)
 			.collect(Collectors.joining());
 	}
-
-	private List<Integer> hashes(int size, List<Integer> marks) {
+	
+	private static List<Integer> hashes(int size, List<Integer> marks) {
 		List<Integer> hashes = new ArrayList<>();
 		for (int n = 0; n < size; n ++) {
 			if (n % 16 == 0) {
@@ -49,25 +57,25 @@ public class Jour10 {
 		return hashes;
 	}
 
-	private List<Integer> marks(int size) {
+	private static List<Integer> marks(int size) {
 		return IntStream.range(0, size)
 			.boxed()
 			.collect(Collectors.toList());
 	}
 	
-	private List<Integer> lengths1(String input) {
+	private static List<Integer> lengths1(String input) {
 		return Arrays.stream(input.split(","))
 			.map(Integer::valueOf)
 			.collect(Collectors.toList());
 	}
 	
-	private List<Integer> lengths2(String input) {
-		return Arrays.stream(this.addSuffix(this.toAscii(input)))
+	private static List<Integer> lengths2(String input) {
+		return Arrays.stream(addSuffix(toAscii(input)))
 			.boxed()
 			.collect(Collectors.toList());
 	}
 	
-	private void rounds(List<Integer> lengths, List<Integer> marks, int size, int iterations) {
+	private static void rounds(List<Integer> lengths, List<Integer> marks, int size, int iterations) {
 		int position = 0, skipSize = 0;
 		for (int rank = 0; rank < iterations; rank ++) {
 			for (int lengthRank = 0; lengthRank < lengths.size(); lengthRank ++) {
@@ -86,13 +94,13 @@ public class Jour10 {
 		}
 	}
 	
-	private final int[] SUFFIX = new int[] {17, 31, 73, 47, 23};
+	private static final int[] SUFFIX = new int[] {17, 31, 73, 47, 23};
 	
-	private int[] toAscii(String input) {
+	private static int[] toAscii(String input) {
 		return input.chars().toArray();
 	}
 
-	private int[] addSuffix(int[] codes) {
+	private static int[] addSuffix(int[] codes) {
 		int[] codesWhithSuffix = Arrays.copyOf(codes, codes.length + SUFFIX.length);
 		for (int n = 0; n < SUFFIX.length; n ++) {
 			codesWhithSuffix[codes.length + n] = SUFFIX[n];
