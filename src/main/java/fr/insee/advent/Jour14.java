@@ -5,14 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class Jour14 {
 
 	public static void main(String[] args) throws Exception {
 		Jour14 jour = new Jour14();
 		System.out.println("Jour14");
 		System.out.println("1. " + jour.ex1("xlqgujun"));
+		System.out.println("2. " + jour.ex2("xlqgujun"));
 	}
 	
 	public long ex1(String input) {
@@ -31,9 +30,18 @@ public class Jour14 {
 
 	public long ex2(String input) {
 		int[][] grid = this.grid(input);
-		Arrays.stream(grid)
-			.forEach(row -> System.out.println(Arrays.toString(row)));
-		return 0L;
+		int zone = 1;
+		for (int x = 0; x < 128; x ++) {
+			for (int y = 0; y < 128; y ++) {
+				this.updateGrid(zone, x, y, grid);
+				zone ++;
+			}	
+		}
+		return Arrays.stream(grid)
+			.flatMap(row -> Arrays.stream(row).boxed())
+			.distinct()
+			.filter(n -> n > 0)
+			.count();
 	}
 	
 	private int[][] grid(String input) {
@@ -50,11 +58,29 @@ public class Jour14 {
 				 String bin = Integer.toBinaryString(Integer.parseInt(hex, 16));
 				 bin = leftPad(bin);
 				 for (int index = 0; index < 4; index ++) {
-					 grid[i][4 * j + index] = Character.getNumericValue(bin.charAt(index));
+					 grid[i][4 * j + index] = 0 - Character.getNumericValue(bin.charAt(index));
 				 }
 			}	
 		}
 		return grid;
+	}
+	
+	private void updateGrid(int zone, int x, int y, int[][] grid) {
+		if (isInGrid(x, y) && notInZone(x, y, grid)) {
+			grid[x][y] = zone;
+			this.updateGrid(zone, x - 1, y, grid);
+			this.updateGrid(zone, x + 1, y, grid);
+			this.updateGrid(zone, x, y - 1, grid);
+			this.updateGrid(zone, x, y + 1, grid);
+		}
+	}
+	
+	private static boolean isInGrid(int x, int y) {
+		return 0 <= x && x < 128 && 0 <= y && y  < 128;
+	}
+	
+	private static boolean notInZone(int x, int y, int[][] grid) {
+		return grid[x][y] == -1;
 	}
 	
 	private static String leftPad(String string) {
