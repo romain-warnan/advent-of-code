@@ -13,13 +13,12 @@ public class Jour16 {
 		Jour16 jour = new Jour16();
 		System.out.println("Jour16");
 		System.out.println("1. " + jour.ex1("abcdefghijklmnop", "src/main/resources/input16"));
+		System.out.println("2. " + jour.ex2("abcdefghijklmnop", "src/main/resources/input16"));
 	}
 	
 	public String ex1(String input, String path) throws IOException {
 		String line = Files.newBufferedReader(Paths.get(path)).readLine();
-		List<Move> moves = Arrays.stream(line.split(","))
-			.map(Moves::fromString)
-			.collect(Collectors.toList());
+		List<Move> moves = moves(line);
 		
 		char[] programs = input.toCharArray();
 		for (Move move : moves) {
@@ -27,9 +26,43 @@ public class Jour16 {
 		}
 		return String.valueOf(programs);
 	}
+	
+	public String ex2(String input, String path) throws IOException {
+		String line = Files.newBufferedReader(Paths.get(path)).readLine();
+		List<Move> moves = moves(line);
+		int cycleLength = cycleLength(input, moves);
+		int usefulIterations = 1_000_000_000 % cycleLength;
+		char[] programs = input.toCharArray();
+		for (int n = 0; n < usefulIterations; n ++) {
+			for (Move move : moves) {
+				programs = move.apply(programs);
+			}
+		}
+		return String.valueOf(programs);
+	}
+	
+	private static int cycleLength(String input, List<Move> moves) {
+		char[] programs = input.toCharArray();
+		int n = 0;
+		while(true) {
+			for (Move move : moves) {
+				programs = move.apply(programs);
+			}
+			n ++;
+			if(input.equals(String.valueOf(programs))) {
+				return n; 
+			}
+		}
+	}
+	
+	private static List<Move> moves(String line) {
+		List<Move> moves = Arrays.stream(line.split(","))
+			.map(Moves::fromString)
+			.collect(Collectors.toList());
+		return moves;
+	}
 
 	public static interface Move {
-		
 		char[] apply(char[] programs);
 	}
 	
