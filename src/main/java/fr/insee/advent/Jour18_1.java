@@ -17,19 +17,19 @@ public class Jour18_1 {
 	}
 	
 	public long ex1(String path) throws IOException {
-		Registry registry = new Registry();
-		List<Instruction> instructions = instructions(path, registry);
+		List<Instruction> instructions = instructions(path);
 		int numberOfInstructions = instructions.size() - 1;
+		Registry registry = new Registry();
 		while (registry.index >= 0 && registry.index <= numberOfInstructions) {
 			instructions.get(registry.index).execute(registry);
 		}
 		return registry.lastSoundPlayed;
 	}
 	
-	private static List<Instruction> instructions(String path, Registry registry) throws IOException {
+	private static List<Instruction> instructions(String path) throws IOException {
 		List<Instruction> moves = Files.readAllLines(Paths.get(path))
 			.stream()
-			.map(input -> Instructions.fromString(input, registry))
+			.map(Instructions::fromString)
 			.collect(Collectors.toList());
 		return moves;
 	}
@@ -67,23 +67,23 @@ public class Jour18_1 {
 	
 	static class Instructions {
 		
-		static Instruction fromString(String input, Registry registry) {
+		static Instruction fromString(String input) {
 			String name = input.substring(0, 3);
 			switch (name) {
 				case "snd":
-					return new Snd(input, registry);
+					return new Snd(input);
 				case "set":
-					return new Set(input, registry);
+					return new Set(input);
 				case "add":
-					return new Add(input, registry);
+					return new Add(input);
 				case "mul":
-					return new Mul(input, registry);
+					return new Mul(input);
 				case "mod":
-					return new Mod(input, registry);
+					return new Mod(input);
 				case "rcv":
-					return new Rcv(input, registry);
+					return new Rcv(input);
 				case "jgz":
-					return new Jgz(input, registry);
+					return new Jgz(input);
 			}
 			return null;
 		}
@@ -93,7 +93,7 @@ public class Jour18_1 {
 		
 		String name, value;
 		
-		MonoInstruction(String input, Registry registry) {
+		MonoInstruction(String input) {
 			String[] tokens = input.split(" +");
 			this.name = tokens[0];
 			this.value = tokens[1];
@@ -109,7 +109,7 @@ public class Jour18_1 {
 		
 		String name, var, value;
 		
-		BiInstruction (String input, Registry registry) {
+		BiInstruction (String input) {
 			String[] tokens = input.split(" +");
 			this.name = tokens[0];
 			this.var = tokens[1];
@@ -124,8 +124,8 @@ public class Jour18_1 {
 	
 	static class Snd extends MonoInstruction {
 		
-		Snd(String input, Registry registry) {
-			super(input, registry);
+		Snd(String input) {
+			super(input);
 		}
 
 		@Override
@@ -137,8 +137,8 @@ public class Jour18_1 {
 	
 	static class Rcv extends MonoInstruction {
 		
-		Rcv(String input, Registry registry) {
-			super(input, registry);
+		Rcv(String input) {
+			super(input);
 		}
 
 		@Override
@@ -154,8 +154,8 @@ public class Jour18_1 {
 	
 	static class Set extends BiInstruction {
 
-		Set(String input, Registry registry) {
-			super(input, registry);
+		Set(String input) {
+			super(input);
 		}
 
 		@Override
@@ -167,8 +167,8 @@ public class Jour18_1 {
 	
 	static class Add extends BiInstruction {
 
-		Add(String input, Registry registry) {
-			super(input, registry);
+		Add(String input) {
+			super(input);
 		}
 
 		@Override
@@ -180,8 +180,8 @@ public class Jour18_1 {
 	
 	static class Mul extends BiInstruction {
 
-		Mul(String input, Registry registry) {
-			super(input, registry);
+		Mul(String input) {
+			super(input);
 		}
 
 		@Override
@@ -193,8 +193,8 @@ public class Jour18_1 {
 	
 	static class Mod extends BiInstruction {
 		
-		Mod(String input, Registry registry) {
-			super(input, registry);
+		Mod(String input) {
+			super(input);
 		}
 		
 		@Override
@@ -206,8 +206,8 @@ public class Jour18_1 {
 	
 	static class Jgz extends BiInstruction {
 		
-		Jgz(String input, Registry registry) {
-			super(input, registry);
+		Jgz(String input) {
+			super(input);
 		}
 		
 		@Override

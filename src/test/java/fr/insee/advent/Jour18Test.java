@@ -5,7 +5,6 @@ import org.junit.Test;
 
 public class Jour18Test {
 
-
     @Test
     public void test1() throws Exception {
    	 Jour18_1 jour = new Jour18_1();
