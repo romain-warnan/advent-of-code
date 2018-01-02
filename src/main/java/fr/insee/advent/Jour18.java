@@ -21,10 +21,13 @@ public class Jour18 {
 		List<Instruction> instructions = instructions(path, registry);
 		int numberOfInstructions = instructions.size() - 1;
 		while (registry.index >= 0 && registry.index <= numberOfInstructions) {
-			System.out.println(registry.index + ": " + instructions.get(registry.index));
 			instructions.get(registry.index).execute(registry);
 		}
 		return registry.lastSoundPlayed;
+	}
+	
+	public long ex2(String path) throws IOException {
+		return 0;
 	}
 	
 	

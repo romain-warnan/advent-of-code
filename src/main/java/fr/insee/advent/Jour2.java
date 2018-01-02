@@ -15,8 +15,8 @@ public class Jour2 {
     public static void main(String[] args) throws IOException {
         Jour2 jour = new Jour2();
         System.out.println("Jour2");
-        System.out.println("1. " + jour.ex1("src/main/resources/input21"));
-        System.out.println("2. " + jour.ex2("src/main/resources/input22"));
+        System.out.println("1. " + jour.ex1("src/main/resources/input2"));
+        System.out.println("2. " + jour.ex2("src/main/resources/input2"));
     }
 
     public int sumLines(String path, ToIntFunction<String[]> function) throws IOException {
