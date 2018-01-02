@@ -8,15 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class Jour18 {
+public class Jour18_2 {
 
 	public static void main(String[] args) throws IOException {
-		Jour18 jour = new Jour18();
-		System.out.println("Jour18");
-		System.out.println("1. " + jour.ex1("src/main/resources/input18"));
+		Jour18_2 jour = new Jour18_2();
+		System.out.println("Jour18.2");
+		System.out.println("1. " + jour.ex2("src/main/resources/input18"));
 	}
 	
-	public long ex1(String path) throws IOException {
+	public long ex2(String path) throws IOException {
 		Registry registry = new Registry();
 		List<Instruction> instructions = instructions(path, registry);
 		int numberOfInstructions = instructions.size() - 1;
@@ -25,11 +25,6 @@ public class Jour18 {
 		}
 		return registry.lastSoundPlayed;
 	}
-	
-	public long ex2(String path) throws IOException {
-		return 0;
-	}
-	
 	
 	private static List<Instruction> instructions(String path, Registry registry) throws IOException {
 		List<Instruction> moves = Files.readAllLines(Paths.get(path))
@@ -44,6 +39,13 @@ public class Jour18 {
 		int index = 0;
 		Map<String, Long> vars = new HashMap<>();
 
+		public Registry() {
+		}
+		
+		public Registry(long programId) {
+			vars.put("p", programId);
+		}
+		
 		Long compute(String entry) {
 			try {
 				return Long.valueOf(entry);
