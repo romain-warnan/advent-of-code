@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Jour18 {
@@ -176,7 +175,7 @@ public class Jour18 {
 
 		@Override
 		public void execute(Registry registry) {
-			registry.vars.put(this.var, registry.compute(this.value));
+			registry.vars.put(this.var, registry.valueOf(this.var) + registry.compute(this.value));
 			registry.index ++;
 		}
 	}
@@ -216,7 +215,7 @@ public class Jour18 {
 		@Override
 		public void execute(Registry registry) {
 			if (registry.valueOf(this.var) > 0) {
-				registry.index += registry.compute(this.value);
+				registry.index = registry.index + registry.compute(this.value).intValue();
 			}
 			else {
 				registry.index ++;
