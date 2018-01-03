@@ -23,27 +23,18 @@ public class Jour18_2 {
 		Registry r1 = new Registry(1);
 		
 		List<Instruction> instructions = instructions(path);
-//		int numberOfInstructions = instructions.size() - 1;
-//		while (stillRunning(r0, numberOfInstructions) && stillRunning(r1, numberOfInstructions)) {
 		while (true) {
 			if (!r0.waiting) {
-				System.out.println("R0 (" + r0.index + ") : " + instructions.get(r0.index) + " [" + r0.queue.size() + "]");
 				instructions.get(r0.index).execute(r0, r1);
 			}
 			if (!r1.waiting) {
-				System.out.println("R1 (" + r1.index + ") : " + instructions.get(r1.index) + " [" + r1.queue.size() + "]");
 				instructions.get(r1.index).execute(r1, r0);
 			}
 			if (r0.waiting && r1.waiting) {
 				return r1.numberOfSendEvents;
-//				break;
 			}
 		}
 	}
-	
-//	private static boolean stillRunning(Registry registry, int numberOfInstructions) {
-//		return registry.index >= 0 && registry.index <= numberOfInstructions;
-//	}
 	
 	private static List<Instruction> instructions(String path) throws IOException {
 		List<Instruction> instructions = Files.readAllLines(Paths.get(path))
@@ -75,14 +66,6 @@ public class Jour18_2 {
 				}
 				return this.vars.get(entry);
 			}
-		}
-		
-		Long valueOf(String entry) {
-			Long value = this.vars.get(entry);
-			if (value == null) {
-				this.vars.put(entry, 0L);
-			}
-			return this.vars.get(entry);
 		}
 	}
 	
@@ -201,7 +184,7 @@ public class Jour18_2 {
 
 		@Override
 		public void execute(Registry ownRegistry, Registry extRegistry) {
-			ownRegistry.vars.put(this.var, ownRegistry.valueOf(this.var) + ownRegistry.compute(this.value));
+			ownRegistry.vars.put(this.var, ownRegistry.compute(this.var) + ownRegistry.compute(this.value));
 			ownRegistry.index ++;
 		}
 	}
@@ -214,7 +197,7 @@ public class Jour18_2 {
 
 		@Override
 		public void execute(Registry ownRegistry, Registry extRegistry) {
-			ownRegistry.vars.put(this.var, ownRegistry.valueOf(this.var) * ownRegistry.compute(this.value));
+			ownRegistry.vars.put(this.var, ownRegistry.compute(this.var) * ownRegistry.compute(this.value));
 			ownRegistry.index ++;
 		}
 	}
@@ -227,7 +210,7 @@ public class Jour18_2 {
 		
 		@Override
 		public void execute(Registry ownRegistry, Registry extRegistry) {
-			ownRegistry.vars.put(this.var, ownRegistry.valueOf(this.var) % ownRegistry.compute(this.value));
+			ownRegistry.vars.put(this.var, ownRegistry.compute(this.var) % ownRegistry.compute(this.value));
 			ownRegistry.index ++;
 		}
 	}
@@ -240,7 +223,7 @@ public class Jour18_2 {
 		
 		@Override
 		public void execute(Registry ownRegistry, Registry extRegistry) {
-			if (ownRegistry.valueOf(this.var) > 0) {
+			if (ownRegistry.compute(this.var) > 0) {
 				ownRegistry.index = ownRegistry.index + ownRegistry.compute(this.value).intValue();
 			}
 			else {
