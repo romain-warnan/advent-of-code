@@ -14,8 +14,9 @@ public class Jour20 {
 	
 	public static void main(String[] args) throws IOException {
 		Jour20 jour = new Jour20();
-		System.out.println("Jour19");
+		System.out.println("Jour20");
 		System.out.println("1. " + jour.ex1("src/main/resources/input20"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input20"));
 	}
 
 	public int ex1(String path) throws IOException {
@@ -35,6 +36,10 @@ public class Jour20 {
 		return -1;
 	}
 
+	public int ex2(String path) {
+		return -1;
+	}
+	
 	private static List<Particule> particules(String path) throws IOException {
 		return Files.readAllLines(Paths.get(path))
 			.stream()
@@ -98,4 +103,5 @@ public class Jour20 {
 	static class Acceleration {
 		long x, y, z;
 	}
+
 }
