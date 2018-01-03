@@ -12,6 +12,7 @@ public class Jour19 {
 		Jour19 jour = new Jour19();
 		System.out.println("Jour19");
 		System.out.println("1. " + jour.ex1("src/main/resources/input19"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input19"));
 	}
 
 	public String ex1(String input) throws IOException {
@@ -21,6 +22,15 @@ public class Jour19 {
 			path.nextStep(map);
 		}
 		return path.letters.toString();
+	}
+	
+	public long ex2(String input) throws IOException {
+		char[][] map = readMapFrom(input);
+		Path path = new Path(findEntryPoint(map));
+		while (!path.endOfPath) {
+			path.nextStep(map);
+		}
+		return path.steps;
 	}
 	
 	enum Way {
@@ -33,12 +43,14 @@ public class Jour19 {
 		Way way;
 		StringBuilder letters;
 		boolean endOfPath = false;
+		long steps;
 		
 		Path(int entryPoint) {
 			this.row = 0;
 			this.col = entryPoint;
 			this.way = Way.SOUTH;
 			this.letters = new StringBuilder();
+			this.steps = 1L;
 		}
 		
 		static boolean isOnPath(char c) {
@@ -59,6 +71,7 @@ public class Jour19 {
 		}
 		
 		void move() {
+			steps ++;
 			switch (way) {
     			case NORTH:
     				row --;
