@@ -16,12 +16,6 @@ public class Jour19 {
 
 	public String ex1(String input) throws IOException {
 		char[][] map = readMapFrom(input);
-//		for (int row = 0; row < map.length; row ++) {
-//			for (int col = 0; col < map[0].length; col ++) {
-//				System.out.print(map[row][col]);
-//			}
-//			System.out.println();
-//		}
 		Path path = new Path(findEntryPoint(map));
 		while (!path.endOfPath) {
 			path.nextStep(map);
@@ -47,43 +41,19 @@ public class Jour19 {
 			this.letters = new StringBuilder();
 		}
 		
-		static boolean isHorizontal(char c) {
-			return c != '|' && c != ' ' && c != '+';
-		}
-		
-		static boolean isVertical(char c) {
-			return c != '-' && c != ' ' && c != '+';
-		}
-		
-		static boolean isLetter(char c) {
-			return c != '|' && c != '-' && c != ' ' && c != '+';
+		static boolean isOnPath(char c) {
+			return Character.isLetter(c) || c == '-' || c == '|';
 		}
 		
 		void changeWay(char[][] map) {
 			switch (way) {
     			case NORTH:
     			case SOUTH:
-    				if (isHorizontal(map[row][col - 1])) {
-    					way = Way.WEST;
-    				}
-    				else if (isHorizontal(map[row][col + 1])) {
-    					way = Way.EAST;
-    				}
-    				else {
-    					endOfPath = true;
-    				}
+    				way = isOnPath(map[row][col - 1]) ? Way.WEST : Way.EAST;
     				break;
     			case EAST:
     			case WEST:
-    				if (isVertical(map[row - 1][col])) {
-    					way = Way.NORTH;
-    				}
-    				else if (isVertical(map[row + 1][col])) {
-    					way = Way.SOUTH;
-    				}
-    				else {
-    					endOfPath = true;
-    				}
+    				way = isOnPath(map[row - 1][col]) ? Way.NORTH : Way.SOUTH;
     				break;
 			}
 		}
@@ -106,17 +76,45 @@ public class Jour19 {
 		}
 		
 		void nextStep(char[][] map) {
-			if(map[row][col] == '+') {
+			if(shouldChangeWay(map)) {
 				changeWay(map);
 			}
+			
 			move();
 			collectLetter(map);
+			
+			if(!shouldChangeWay(map)) {
+				checkIfEndOfPath(map);
+			}
+		}
+		
+		boolean shouldChangeWay(char[][] map) {
+			return map[row][col] == '+';
 		}
 		
 		void collectLetter(char[][] map) {
-			if(isLetter(map[row][col])) {
+			if(Character.isLetter(map[row][col])) {
 				letters.append(map[row][col]);
 			}
+		}
+		
+		void checkIfEndOfPath(char[][] map) {
+			char c = ' ';
+			switch (way) {
+    			case NORTH:
+    				c = map[row - 1][col];
+    				break;
+    			case SOUTH:
+    				c = map[row + 1][col];
+    				break;
+    			case EAST:
+    				c = map[row][col + 1];
+    				break;
+    			case WEST:
+    				c = map[row][col - 1];
+    				break;
+			}
+			endOfPath = !(c == '+' || isOnPath(c));
 		}
 	}
 	
