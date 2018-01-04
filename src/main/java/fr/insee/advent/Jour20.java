@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Jour20 {
 
@@ -29,25 +30,49 @@ public class Jour20 {
 			.min()
 			.getAsLong();
 		for (int index = 0; index < particules.size(); index ++) {
-			if (particules.get(index).manhattan() == minimumDistance) {
-				return index;
+			Particule particule = particules.get(index); 
+			if (particule.manhattan() == minimumDistance) {
+				return particule.id;
 			}
 		}
 		return -1;
 	}
 
-	public int ex2(String path) {
-		return -1;
+	public int ex2(String path) throws IOException {
+		List<Particule> particules = particules(path);
+		for (int n = 0; n < 10_000; n ++) {
+			List<Integer> particulesToRemove = particulesToRemove(particules);
+			particules = removeCollisions(particules, particulesToRemove);
+			particules.stream().forEach(Particule::move);
+		}
+		return particules.size();
 	}
 	
-	private static List<Particule> particules(String path) throws IOException {
-		return Files.readAllLines(Paths.get(path))
+	static List<Particule> particules(String path) throws IOException {
+		List<Particule> particules = Files.readAllLines(Paths.get(path))
 			.stream()
 			.map(Particule::fromLine)
+			.collect(Collectors.toList());
+		IntStream.range(0, particules.size())
+			.forEach(n -> particules.get(n).id = n);
+		return particules;
+	}
+	
+	static List<Integer> particulesToRemove(List<Particule> particules) {
+		return particules.stream()
+			.filter(p -> p.collideWithOneOf(particules))
+			.map(p -> p.id)
+			.collect(Collectors.toList());
+	}
+	
+	static List<Particule> removeCollisions(List<Particule> particules, List<Integer> particulesToRemove) {
+		return particules.stream()
+			.filter(p -> !particulesToRemove.contains(p.id))
 			.collect(Collectors.toList());
 	}
 	
 	static class Particule {
+		int id;
 		Position p;
 		Velocity v;
 		Acceleration a;
@@ -89,6 +114,20 @@ public class Jour20 {
 		
 		long manhattan() {
 			return Math.abs(p.x) + Math.abs(p.y) + Math.abs(p.z);
+		}
+		
+		boolean collideWithOther(Particule other) {
+			return
+				this.p.x == other.p.x &&
+				this.p.y == other.p.y && 
+				this.p.z == other.p.z &&
+				this.id != other.id
+			;
+		}
+		
+		boolean collideWithOneOf(List<Particule> particules) {
+			return particules.stream()
+				.anyMatch(this::collideWithOther);
 		}
 	}
 	
