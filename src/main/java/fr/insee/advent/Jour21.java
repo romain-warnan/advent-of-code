@@ -3,6 +3,7 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -35,6 +36,10 @@ public class Jour21 {
 			.stream()
 			.map(Rules::fromLine)
 			.collect(Collectors.toList());
+		Rule rule = rules.get(39);
+		System.out.println(rule);
+		rule.rotate();
+		System.out.println(rule);
 		return -1;
 	}
 	
@@ -44,7 +49,7 @@ public class Jour21 {
 	 */
 	
 	interface Rule {
-		
+		void rotate();
 	}
 	
 	static abstract class Rules implements Rule {
@@ -52,6 +57,17 @@ public class Jour21 {
 		boolean[][] in;
 		boolean[][] out;
 
+		@Override
+		public void rotate() {
+			boolean[][] rotation = Arrays.copyOf(in, in.length);
+			for (int i = 0; i < in.length; i ++) {
+					for (int j = 0; j < in[0].length; j ++) {
+						rotation[i][j] = in[j][i];
+					}
+			}
+			this.in = rotation;
+		}
+		
 		static boolean[] fromGroup(String group) {
 			Boolean[] boxed = group.chars()
 				.boxed()
@@ -75,6 +91,18 @@ public class Jour21 {
 				return BiRule.from(biMatcher);
 			}
 			return null;
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < in.length; i ++) {
+				for (int j = 0; j < in[0].length; j ++) {
+					builder.append(in[i][j] ? '#' : '.');
+				}
+				builder.append('\n');
+			}
+			return builder.toString();
 		}
 	}
 	
