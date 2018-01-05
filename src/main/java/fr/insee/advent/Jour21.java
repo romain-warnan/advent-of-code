@@ -3,7 +3,6 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,21 +30,12 @@ public class Jour21 {
 		List<Rule> rules = Files
 			.readAllLines(Paths.get(path))
 			.stream()
-			.map(Rules::fromLine)
+			.map(Rule::fromLine)
 			.collect(Collectors.toList());
 		return -1;
 	}
 
-	/**
-	 * '.' = 46
-	 * '#' = 35
-	 */
-
-	interface Rule {
-
-	}
-
-	static abstract class Rules implements Rule {
+	static abstract class Rule {
 
 		boolean[][] in;
 		boolean[][] out;
@@ -132,6 +122,10 @@ public class Jour21 {
 			;
 		}
 		
+		/**
+		 * '.' = 46
+		 * '#' = 35
+		 */
 		static boolean[] fromGroup(String group) {
 			Boolean[] boxed = group
 				.chars()
@@ -171,7 +165,7 @@ public class Jour21 {
 		}
 	}
 
-	static class BiRule extends Rules {
+	static class BiRule extends Rule {
 
 		BiRule() {
 			in = new boolean[2][2];
@@ -190,7 +184,7 @@ public class Jour21 {
 		}
 	}
 
-	static class TriRule extends Rules {
+	static class TriRule extends Rule {
 
 		TriRule() {
 			in = new boolean[3][3];
