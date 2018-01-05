@@ -3,6 +3,7 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,10 +33,6 @@ public class Jour21 {
 			.stream()
 			.map(Rules::fromLine)
 			.collect(Collectors.toList());
-		Rule rule = rules.get(39);
-		System.out.println(rule);
-		rule.rotate270();
-		System.out.println(rule);
 		return -1;
 	}
 
@@ -46,11 +43,6 @@ public class Jour21 {
 
 	interface Rule {
 
-		void rotate90();
-		void rotate180();
-		void rotate270();
-		void flipV();
-		void flipH();
 	}
 
 	static abstract class Rules implements Rule {
@@ -58,8 +50,7 @@ public class Jour21 {
 		boolean[][] in;
 		boolean[][] out;
 
-		@Override
-		public void rotate90() {
+		static boolean[][] rotate90(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -68,11 +59,10 @@ public class Jour21 {
 					rotation[c][M - 1 - r] = in[r][c];
 				}
 			}
-			this.in = rotation;
+			return rotation;
 		}
 		
-		@Override
-		public void rotate180() {
+		static boolean[][] rotate180(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -81,11 +71,10 @@ public class Jour21 {
 					rotation[M - r - 1][N - c - 1] = in[r][c];
 				}
 			}
-			this.in = rotation;
+			return rotation;
 		}
 		
-		@Override
-		public void rotate270() {
+		static boolean[][] rotate270(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -94,11 +83,10 @@ public class Jour21 {
 					rotation[N - c - 1][r] = in[r][c];
 				}
 			}
-			this.in = rotation;
+			return rotation;
 		}
 		
-		@Override
-		public void flipV() {
+		static boolean[][] flipV(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -107,11 +95,10 @@ public class Jour21 {
 					rotation[r][M - 1 - c] = in[r][c];
 				}
 			}
-			this.in = rotation;
+			return rotation;
 		}
 		
-		@Override
-		public void flipH() {
+		static boolean[][] flipH(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -120,9 +107,31 @@ public class Jour21 {
 					rotation[N - 1 - r][c] = in[r][c];
 				}
 			}
-			this.in = rotation;
+			return rotation;
 		}
 
+		boolean matchesExactPattern(boolean[][] pattern) {
+			for (int r = 0; r < in.length; r++) {
+				for (int c = 0; c < in[0].length; c++) {
+					if (in[r][c] ^ pattern[r][c]) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		
+		boolean matchesPattern(boolean[][] pattern) {
+			return
+				matchesExactPattern(pattern) ||
+				matchesExactPattern(rotate90(pattern)) ||
+				matchesExactPattern(rotate180(pattern)) ||
+				matchesExactPattern(rotate270(pattern)) ||
+				matchesExactPattern(flipH(pattern)) ||
+				matchesExactPattern(flipV(pattern))
+			;
+		}
+		
 		static boolean[] fromGroup(String group) {
 			Boolean[] boxed = group
 				.chars()
