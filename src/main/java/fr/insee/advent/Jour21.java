@@ -17,7 +17,7 @@ public class Jour21 {
 	 * ..#
 	 * ###
 	 */
-	static final boolean[][] firstPattern = new boolean[][] { { false, true, false }, { false, false, true }, { true, true, true }
+	static final boolean[][] originalImage = new boolean[][] { { false, true, false }, { false, false, true }, { true, true, true }
 	};
 
 	public static void main(String[] args) throws IOException {
@@ -26,13 +26,102 @@ public class Jour21 {
 		System.out.println("1. " + jour.ex1(5, "src/main/resources/input21"));
 	}
 
-	public int ex1(int iterations, String path) throws IOException {
+	public long ex1(int iterations, String path) throws IOException {
 		List<Rule> rules = Files
 			.readAllLines(Paths.get(path))
 			.stream()
 			.map(Rule::fromLine)
 			.collect(Collectors.toList());
-		return -1;
+		
+		boolean[][] image = originalImage;
+		for (int n = 0;  n < iterations; n++) {
+			image = this.applyRules(image, rules);
+			
+		}
+		return countPixels(image);
+	}
+
+	static long countPixels(boolean[][] pattern) {
+		long count = 0;
+		for (int i = 0; i < pattern.length; i++) {
+			for (int j = 0; j < pattern[0].length; j++) {
+				if(pattern[i][j]) {
+					count ++;
+				}
+			}
+		}
+		return count;
+	}
+	
+	static void print(boolean[][] pattern) {
+		StringBuilder builder = new StringBuilder();
+		for (int i = 0; i < pattern.length; i++) {
+			for (int j = 0; j < pattern[0].length; j++) {
+				builder.append(pattern[i][j] ? '#' : '.');
+			}
+			builder.append('\n');
+		}
+		System.out.println(builder.toString());
+	}
+	
+	boolean[][] applyRules(boolean[][] image, List<Rule> rules) {
+		int length = image.length;
+		if (image.length % 2 == 0) {
+			return applyBiRule(image, rules, length);
+		}
+		return applyTriRule(image, rules, length);
+	}
+
+	boolean[][] applyBiRule(boolean[][] image, List<Rule> rules, int length) {
+		int d = length / 2;
+		boolean[][] enhancedImage = new boolean[3 * d][3 * d];
+		for (int i = 0; i < d; i++) {
+			for (int j = 0; j < d; j++) {
+				boolean[][] pattern = new boolean[2][2];
+				for (int r = 0; r < 2; r++) {
+					for (int c = 0; c < 2; c++) {
+						pattern[r][c] = image[2 * i + r][2 * j + c];
+					}	
+				}
+				Rule rule = findMatchingRule(pattern, rules);
+				for (int r = 0; r < 3; r++) {
+					for (int c = 0; c < 3; c++) {
+						enhancedImage[3 * i + r][3 * j + c] = rule.out[r][c];
+					}	
+				}
+			}
+		}
+		return enhancedImage;
+	}
+	
+	boolean[][] applyTriRule(boolean[][] image, List<Rule> rules, int length) {
+		int d = length / 3;
+		boolean[][] enhancedImage = new boolean[4 * d][4 * d];
+		for (int i = 0; i < d; i++) {
+			for (int j = 0; j < d; j++) {
+				boolean[][] pattern = new boolean[3][3];
+				for (int r = 0; r < 3; r++) {
+					for (int c = 0; c < 3; c++) {
+						pattern[r][c] = image[3 * i + r][3 * j + c];
+					}	
+				}
+				Rule rule = findMatchingRule(pattern, rules);
+				for (int r = 0; r < 4; r++) {
+					for (int c = 0; c < 4; c++) {
+						enhancedImage[4 * i + r][4 * j + c] = rule.out[r][c];
+					}	
+				}
+			}
+		}
+		return enhancedImage;
+	}
+
+	Rule findMatchingRule(boolean[][] pattern, List<Rule> rules) {
+		return rules
+			.stream()
+			.filter(rule -> rule.matchesPattern(pattern))
+			.findFirst()
+			.get();
 	}
 
 	static abstract class Rule {
@@ -40,88 +129,6 @@ public class Jour21 {
 		boolean[][] in;
 		boolean[][] out;
 
-		static boolean[][] rotate90(boolean[][] in) {
-			final int M = in.length;
-			final int N = in[0].length;
-			boolean[][] rotation = new boolean[N][M];
-			for (int r = 0; r < M; r++) {
-				for (int c = 0; c < N; c++) {
-					rotation[c][M - 1 - r] = in[r][c];
-				}
-			}
-			return rotation;
-		}
-		
-		static boolean[][] rotate180(boolean[][] in) {
-			final int M = in.length;
-			final int N = in[0].length;
-			boolean[][] rotation = new boolean[N][M];
-			for (int r = 0; r < M; r++) {
-				for (int c = 0; c < N; c++) {
-					rotation[M - r - 1][N - c - 1] = in[r][c];
-				}
-			}
-			return rotation;
-		}
-		
-		static boolean[][] rotate270(boolean[][] in) {
-			final int M = in.length;
-			final int N = in[0].length;
-			boolean[][] rotation = new boolean[N][M];
-			for (int r = 0; r < M; r++) {
-				for (int c = 0; c < N; c++) {
-					rotation[N - c - 1][r] = in[r][c];
-				}
-			}
-			return rotation;
-		}
-		
-		static boolean[][] flipV(boolean[][] in) {
-			final int M = in.length;
-			final int N = in[0].length;
-			boolean[][] rotation = new boolean[N][M];
-			for (int r = 0; r < M; r++) {
-				for (int c = 0; c < N; c++) {
-					rotation[r][M - 1 - c] = in[r][c];
-				}
-			}
-			return rotation;
-		}
-		
-		static boolean[][] flipH(boolean[][] in) {
-			final int M = in.length;
-			final int N = in[0].length;
-			boolean[][] rotation = new boolean[N][M];
-			for (int r = 0; r < M; r++) {
-				for (int c = 0; c < N; c++) {
-					rotation[N - 1 - r][c] = in[r][c];
-				}
-			}
-			return rotation;
-		}
-
-		boolean matchesExactPattern(boolean[][] pattern) {
-			for (int r = 0; r < in.length; r++) {
-				for (int c = 0; c < in[0].length; c++) {
-					if (in[r][c] ^ pattern[r][c]) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-		
-		boolean matchesPattern(boolean[][] pattern) {
-			return
-				matchesExactPattern(pattern) ||
-				matchesExactPattern(rotate90(pattern)) ||
-				matchesExactPattern(rotate180(pattern)) ||
-				matchesExactPattern(rotate270(pattern)) ||
-				matchesExactPattern(flipH(pattern)) ||
-				matchesExactPattern(flipV(pattern))
-			;
-		}
-		
 		/**
 		 * '.' = 46
 		 * '#' = 35
@@ -140,7 +147,7 @@ public class Jour21 {
 			return pattern;
 		}
 
-		static Rule fromLine(String line) {
+		private static Rule fromLine(String line) {
 			Matcher triMatcher = triRule.matcher(line);
 			if (triMatcher.matches()) {
 				return TriRule.from(triMatcher);
@@ -150,6 +157,108 @@ public class Jour21 {
 				return BiRule.from(biMatcher);
 			}
 			return null;
+		}
+
+		private static boolean[][] rotate90(boolean[][] in) {
+			final int M = in.length;
+			final int N = in[0].length;
+			boolean[][] rotation = new boolean[N][M];
+			for (int r = 0; r < M; r++) {
+				for (int c = 0; c < N; c++) {
+					rotation[c][M - 1 - r] = in[r][c];
+				}
+			}
+			return rotation;
+		}
+
+		private static boolean[][] rotate180(boolean[][] in) {
+			final int M = in.length;
+			final int N = in[0].length;
+			boolean[][] rotation = new boolean[N][M];
+			for (int r = 0; r < M; r++) {
+				for (int c = 0; c < N; c++) {
+					rotation[M - r - 1][N - c - 1] = in[r][c];
+				}
+			}
+			return rotation;
+		}
+
+		private static boolean[][] rotate270(boolean[][] in) {
+			final int M = in.length;
+			final int N = in[0].length;
+			boolean[][] rotation = new boolean[N][M];
+			for (int r = 0; r < M; r++) {
+				for (int c = 0; c < N; c++) {
+					rotation[N - c - 1][r] = in[r][c];
+				}
+			}
+			return rotation;
+		}
+
+		private static boolean[][] flipV(boolean[][] in) {
+			final int M = in.length;
+			final int N = in[0].length;
+			boolean[][] rotation = new boolean[N][M];
+			for (int r = 0; r < M; r++) {
+				for (int c = 0; c < N; c++) {
+					rotation[r][M - 1 - c] = in[r][c];
+				}
+			}
+			return rotation;
+		}
+
+		private static boolean[][] flipH(boolean[][] in) {
+			final int M = in.length;
+			final int N = in[0].length;
+			boolean[][] rotation = new boolean[N][M];
+			for (int r = 0; r < M; r++) {
+				for (int c = 0; c < N; c++) {
+					rotation[N - 1 - r][c] = in[r][c];
+				}
+			}
+			return rotation;
+		}
+
+		private boolean matchesExactPattern(boolean[][] pattern) {
+			for (int r = 0; r < in.length; r++) {
+				for (int c = 0; c < in[0].length; c++) {
+					if (in[r][c] ^ pattern[r][c]) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
+		boolean matchesPattern(boolean[][] pattern) {
+			if (pattern.length == 2 && this instanceof TriRule) {
+				return false;
+			}
+			if (pattern.length == 3 && this instanceof BiRule) {
+				return false;
+			}
+			return
+				matchesExactPattern(pattern) ||
+				matchesExactPattern(rotate90(pattern)) ||
+				matchesExactPattern(rotate180(pattern)) ||
+				matchesExactPattern(rotate270(pattern)) ||
+				matchesExactPattern(flipH(pattern)) ||
+				matchesExactPattern(flipV(pattern)) ||
+				
+				matchesExactPattern(flipV(flipH(pattern))) ||
+				
+				matchesExactPattern(rotate90(flipH(pattern))) ||
+				matchesExactPattern(rotate180(flipH(pattern))) ||
+				matchesExactPattern(rotate270(flipH(pattern))) ||
+				
+				matchesExactPattern(rotate90(flipV(pattern))) ||
+				matchesExactPattern(rotate180(flipV(pattern))) ||
+				matchesExactPattern(rotate270(flipV(pattern)))  ||
+				
+				matchesExactPattern(rotate90(flipH(flipV(pattern)))) ||
+				matchesExactPattern(rotate180(flipH(flipV(pattern)))) ||
+				matchesExactPattern(rotate270(flipH(flipV(pattern))))
+			;
 		}
 
 		@Override
