@@ -23,10 +23,11 @@ public class Jour21 {
 	public static void main(String[] args) throws IOException {
 		Jour21 jour = new Jour21();
 		System.out.println("Jour21");
-		System.out.println("1. " + jour.ex1(5, "src/main/resources/input21"));
+		System.out.println("1. " + jour.ex(5, "src/main/resources/input21"));
+		System.out.println("2. " + jour.ex(18, "src/main/resources/input21"));
 	}
 
-	public long ex1(int iterations, String path) throws IOException {
+	public long ex(int iterations, String path) throws IOException {
 		List<Rule> rules = Files
 			.readAllLines(Paths.get(path))
 			.stream()
