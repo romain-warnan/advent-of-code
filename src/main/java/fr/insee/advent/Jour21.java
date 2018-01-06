@@ -3,6 +3,8 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,12 +35,15 @@ public class Jour21 {
 			.stream()
 			.map(Rule::fromLine)
 			.collect(Collectors.toList());
-		
+
+		Instant starts = Instant.now();
 		boolean[][] image = originalImage;
 		for (int n = 0;  n < iterations; n++) {
 			image = this.applyRules(image, rules);
 			
 		}
+		Instant ends = Instant.now();
+		System.out.println(Duration.between(starts, ends));
 		return countPixels(image);
 	}
 
@@ -245,20 +250,12 @@ public class Jour21 {
 				matchesExactPattern(rotate270(pattern)) ||
 				matchesExactPattern(flipH(pattern)) ||
 				matchesExactPattern(flipV(pattern)) ||
-				
-				matchesExactPattern(flipV(flipH(pattern))) ||
-				
 				matchesExactPattern(rotate90(flipH(pattern))) ||
 				matchesExactPattern(rotate180(flipH(pattern))) ||
 				matchesExactPattern(rotate270(flipH(pattern))) ||
-				
 				matchesExactPattern(rotate90(flipV(pattern))) ||
 				matchesExactPattern(rotate180(flipV(pattern))) ||
-				matchesExactPattern(rotate270(flipV(pattern)))  ||
-				
-				matchesExactPattern(rotate90(flipH(flipV(pattern)))) ||
-				matchesExactPattern(rotate180(flipH(flipV(pattern)))) ||
-				matchesExactPattern(rotate270(flipH(flipV(pattern))))
+				matchesExactPattern(rotate270(flipV(pattern)))
 			;
 		}
 
