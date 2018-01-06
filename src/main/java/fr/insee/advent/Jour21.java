@@ -132,9 +132,10 @@ public class Jour21 {
 
 	static abstract class Rule {
 
+		boolean[][][] ins;
 		boolean[][] in;
 		boolean[][] out;
-
+		
 		/**
 		 * '.' = 46
 		 * '#' = 35
@@ -153,7 +154,7 @@ public class Jour21 {
 			return pattern;
 		}
 
-		private static Rule fromLine(String line) {
+		static Rule fromLine(String line) {
 			Matcher triMatcher = triRule.matcher(line);
 			if (triMatcher.matches()) {
 				return TriRule.from(triMatcher);
@@ -165,7 +166,7 @@ public class Jour21 {
 			return null;
 		}
 
-		private static boolean[][] rotate90(boolean[][] in) {
+		static boolean[][] rotate90(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -177,7 +178,7 @@ public class Jour21 {
 			return rotation;
 		}
 
-		private static boolean[][] rotate180(boolean[][] in) {
+		static boolean[][] rotate180(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -189,7 +190,7 @@ public class Jour21 {
 			return rotation;
 		}
 
-		private static boolean[][] rotate270(boolean[][] in) {
+		static boolean[][] rotate270(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -201,7 +202,7 @@ public class Jour21 {
 			return rotation;
 		}
 
-		private static boolean[][] flipV(boolean[][] in) {
+		static boolean[][] flipV(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -213,7 +214,7 @@ public class Jour21 {
 			return rotation;
 		}
 
-		private static boolean[][] flipH(boolean[][] in) {
+		static boolean[][] flipH(boolean[][] in) {
 			final int M = in.length;
 			final int N = in[0].length;
 			boolean[][] rotation = new boolean[N][M];
@@ -225,7 +226,40 @@ public class Jour21 {
 			return rotation;
 		}
 
-		private boolean matchesExactPattern(boolean[][] pattern) {
+		static void computeIns(Rule instance) {
+			instance.ins[0] = instance.in;
+			instance.ins[1] = flipV(instance.in); 
+			instance.ins[2] = flipH(instance.in);
+			
+			instance.ins[3] = rotate90(instance.in); 
+			instance.ins[4] = rotate180(instance.in); 
+			instance.ins[5] = rotate270(instance.in); 
+			
+			instance.ins[6] = rotate90(flipV(instance.in)); 
+			instance.ins[7] = rotate180(flipV(instance.in)); 
+			instance.ins[8] = rotate270(flipV(instance.in));
+			
+			instance.ins[9] = rotate90(flipH(instance.in)); 
+			instance.ins[10] = rotate180(flipH(instance.in)); 
+			instance.ins[11] = rotate270(flipH(instance.in));
+		}
+
+		boolean matchesPattern(boolean[][] pattern) {
+				if (pattern.length == 2 && this instanceof TriRule) {
+					return false;
+				}
+				if (pattern.length == 3 && this instanceof BiRule) {
+					return false;
+				}
+			for (int n = 0; n < 12; n++) {
+				if (matchesOnePattern(pattern, ins[n])) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		boolean matchesOnePattern(boolean[][] pattern, boolean[][] in) {
 			for (int r = 0; r < in.length; r++) {
 				for (int c = 0; c < in[0].length; c++) {
 					if (in[r][c] ^ pattern[r][c]) {
@@ -234,29 +268,6 @@ public class Jour21 {
 				}
 			}
 			return true;
-		}
-
-		boolean matchesPattern(boolean[][] pattern) {
-			if (pattern.length == 2 && this instanceof TriRule) {
-				return false;
-			}
-			if (pattern.length == 3 && this instanceof BiRule) {
-				return false;
-			}
-			return
-				matchesExactPattern(pattern) ||
-				matchesExactPattern(rotate90(pattern)) ||
-				matchesExactPattern(rotate180(pattern)) ||
-				matchesExactPattern(rotate270(pattern)) ||
-				matchesExactPattern(flipH(pattern)) ||
-				matchesExactPattern(flipV(pattern)) ||
-				matchesExactPattern(rotate90(flipH(pattern))) ||
-				matchesExactPattern(rotate180(flipH(pattern))) ||
-				matchesExactPattern(rotate270(flipH(pattern))) ||
-				matchesExactPattern(rotate90(flipV(pattern))) ||
-				matchesExactPattern(rotate180(flipV(pattern))) ||
-				matchesExactPattern(rotate270(flipV(pattern)))
-			;
 		}
 
 		@Override
@@ -277,6 +288,7 @@ public class Jour21 {
 		BiRule() {
 			in = new boolean[2][2];
 			out = new boolean[3][3];
+			ins = new boolean[12][2][2];
 		}
 
 		static BiRule from(Matcher matcher) {
@@ -287,6 +299,8 @@ public class Jour21 {
 			instance.out[0] = fromGroup(matcher.group(3));
 			instance.out[1] = fromGroup(matcher.group(4));
 			instance.out[2] = fromGroup(matcher.group(5));
+			
+			computeIns(instance); 
 			return instance;
 		}
 	}
@@ -296,6 +310,7 @@ public class Jour21 {
 		TriRule() {
 			in = new boolean[3][3];
 			out = new boolean[4][4];
+			ins = new boolean[12][3][3];
 		}
 
 		static TriRule from(Matcher matcher) {
@@ -308,6 +323,8 @@ public class Jour21 {
 			instance.out[1] = fromGroup(matcher.group(5));
 			instance.out[2] = fromGroup(matcher.group(6));
 			instance.out[3] = fromGroup(matcher.group(7));
+
+			computeIns(instance); 
 			return instance;
 		}
 	}
