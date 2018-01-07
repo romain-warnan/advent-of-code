@@ -3,11 +3,9 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import fr.insee.advent.Jour22_2.Node.State;
 
 public class Jour22_2 {
 
@@ -21,30 +19,30 @@ public class Jour22_2 {
 		List<char[]> map = map(path);
 		int mapWidth = mapWidth(map);
 		int mapHeight = mapHeight(map);
-		List<Node> nodes = nodes(map, mapWidth, mapHeight);
+		State[][] nodes = nodes(map, mapWidth, mapHeight);
 		VirusCarrier carrier = new VirusCarrier();
+		carrier.x = mapWidth / 2;
+		carrier.y =  mapHeight / 2;
 		for (int n = 0; n < iterations; n++) {
-			if (n % 10_000 == 0) {
-				System.out.println(n);
-			}
-			carrier.burst(nodes);
+			nodes = carrier.burst(nodes);
 		}
 		return carrier.infections;
 	}
 
-	private List<Node> nodes(List<char[]> map, int mapWidth, int mapHeight) {
-		List<Node> nodes = new ArrayList<>();
+	private State[][] nodes(List<char[]> map, int mapWidth, int mapHeight) {
+		State[][] states = new State[mapWidth][mapHeight];
 		for (int x = 0; x < mapWidth; x++) {
 			for (int y = 0; y < mapHeight; y++) {
-				int xNode = x - (mapWidth / 2);
-				int yNode = (mapHeight / 2) - y;
 				char c = map.get(y)[x];
 				if (c == '#') {
-					nodes.add(Node.newInfectedNode(xNode, yNode));
+					states[y][x] = State.INFECTED;
+				}
+				else {
+					states[y][x] = State.CLEAN;
 				}
 			}	
 		}
-		return nodes;
+		return states;
 	}
 	
 	List<char[]> map(String path) throws IOException {
@@ -62,30 +60,8 @@ public class Jour22_2 {
 		return map.size();
 	}
 	
-	static class Node {
-		int x, y;
-		State state;
-		
-		private Node(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-		
-		static Node newCleanNode(int x, int y) {
-			Node node = new Node(x, y);
-			node.state = State.CLEAN;
-			return node;
-		}
-		
-		static Node newInfectedNode(int x, int y) {
-			Node node = new Node(x, y);
-			node.state = State.INFECTED;
-			return node;
-		}
-		
-		enum State {
-			CLEAN, WEAKENED, INFECTED, FLAGGED
-		}
+	enum State {
+		CLEAN, WEAKENED, INFECTED, FLAGGED
 	}
 	
 	static class VirusCarrier {
@@ -104,54 +80,82 @@ public class Jour22_2 {
 			NORTH, EAST, SOUTH, WEST
 		}
 		
-		void burst(List<Node> nodes) {
-			Node node = this.currentNode(nodes);
-			changeStateAndWay(node, nodes);
+		State[][] burst(State[][] nodes) {
+			nodes = resizeMap(nodes);
+			State state = Optional.ofNullable(nodes[y][x]).orElse(State.CLEAN);
+			nodes[y][x] = changeStateAndWay(state);
 			move();
+			return nodes;
+		}
+
+		private State[][] resizeMap(State[][] nodes) {
+			int height = nodes.length;
+			int width = nodes[0].length;
+			if (y < 0) {
+				y ++;
+				State[][] copyOfNodes = new State[height + 1][width];
+				for (int i = 0; i < height; i++) {
+					copyOfNodes[i + 1] = nodes[i];
+				}
+				return copyOfNodes;
+			}
+			if (y >= height) {
+				State[][] copyOfNodes = new State[height + 1][width];
+				for (int i = 0; i < height; i++) {
+					copyOfNodes[i] = nodes[i];
+				}
+				return copyOfNodes;
+			}
+			if (x < 0) {
+				x ++;
+				State[][] copyOfNodes = new State[height][width + 1];
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						copyOfNodes[i][j + 1] = nodes[i][j];
+					}
+				}
+				return copyOfNodes;
+			}
+			if (x >= width) {
+				State[][] copyOfNodes = new State[height][width + 1];
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						copyOfNodes[i][j] = nodes[i][j];
+					}
+				}
+				return copyOfNodes;
+			}
+			return nodes;
 		}
 		
-		private void changeStateAndWay(Node node, List<Node> nodes) {
-			switch (node.state) {
+		private State changeStateAndWay(State state) {
+			switch (state) {
 				case CLEAN:
 					turnLeft();
-					node.state = State.WEAKENED;
-					break;
+					return State.WEAKENED;
 				case WEAKENED:
-					node.state = State.INFECTED;
 					infections ++;
-					break;
+					return State.INFECTED;
 				case INFECTED:
 					turnRight();
-					node.state = State.FLAGGED;
-					break;
+					return State.FLAGGED;
 				case FLAGGED:
 					goBack();
-					nodes.remove(node);
-					break;
+					return State.CLEAN;
 			}
-		}
-		
-		private Node currentNode(List<Node> nodes) {
-			return nodes.stream()
-				.filter(n -> n.x == this.x && n.y == this.y)
-				.findFirst()
-				.orElseGet(() -> {
-					Node node = Node.newCleanNode(x, y);
-					nodes.add(node);
-					return node;
-				});
+			return null;
 		}
 
 		private void move() {
 			switch (way) {
 				case NORTH:
-					y++;
+					y--;
 					break;
 				case EAST:
 					x++;
 					break;
 				case SOUTH:
-					y--;
+					y++;
 					break;
 				case WEST:
 					x--;
