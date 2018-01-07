@@ -26,12 +26,12 @@ public class Jour22Test {
 	@Test
 	public void test21() throws Exception {
 		Jour22_2 jour = new Jour22_2();
-		Assert.assertEquals(26, jour.ex1(100, "src/test/resources/input22"));
+		Assert.assertEquals(26, jour.ex2(100, "src/test/resources/input22"));
 	}
 	
 	@Test
 	public void test22() throws Exception {
 		Jour22_2 jour = new Jour22_2();
-		Assert.assertEquals(2_511_944, jour.ex1(10_000_000, "src/test/resources/input22"));
+		Assert.assertEquals(2_511_944, jour.ex2(10_000_000, "src/test/resources/input22"));
 	}
 }

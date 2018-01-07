@@ -7,21 +7,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import fr.insee.advent.Jour22_2.Node.State;
+
 public class Jour22_2 {
 
 	public static void main(String[] args) throws IOException {
 		Jour22_2 jour = new Jour22_2();
 		System.out.println("Jour22");
-		System.out.println("1. " + jour.ex1(10_000, "src/main/resources/input22"));
+		System.out.println("2. " + jour.ex2(10_000_000, "src/main/resources/input22"));
 	}
 
-	public long ex1(int iterations, String path) throws IOException {
+	public long ex2(int iterations, String path) throws IOException {
 		List<char[]> map = map(path);
 		int mapWidth = mapWidth(map);
 		int mapHeight = mapHeight(map);
 		List<Node> nodes = nodes(map, mapWidth, mapHeight);
 		VirusCarrier carrier = new VirusCarrier();
 		for (int n = 0; n < iterations; n++) {
+			if (n % 10_000 == 0) {
+				System.out.println(n);
+			}
 			carrier.burst(nodes);
 		}
 		return carrier.infections;
@@ -31,9 +36,11 @@ public class Jour22_2 {
 		List<Node> nodes = new ArrayList<>();
 		for (int x = 0; x < mapWidth; x++) {
 			for (int y = 0; y < mapHeight; y++) {
+				int xNode = x - (mapWidth / 2);
+				int yNode = (mapHeight / 2) - y;
 				char c = map.get(y)[x];
 				if (c == '#') {
-					nodes.add(new Node(x - (mapWidth / 2), (mapHeight / 2) - y));
+					nodes.add(Node.newInfectedNode(xNode, yNode));
 				}
 			}	
 		}
@@ -57,10 +64,23 @@ public class Jour22_2 {
 	
 	static class Node {
 		int x, y;
+		State state;
 		
-		Node(int x, int y) {
+		private Node(int x, int y) {
 			this.x = x;
 			this.y = y;
+		}
+		
+		static Node newCleanNode(int x, int y) {
+			Node node = new Node(x, y);
+			node.state = State.CLEAN;
+			return node;
+		}
+		
+		static Node newInfectedNode(int x, int y) {
+			Node node = new Node(x, y);
+			node.state = State.INFECTED;
+			return node;
 		}
 		
 		enum State {
@@ -86,43 +106,40 @@ public class Jour22_2 {
 		
 		void burst(List<Node> nodes) {
 			Node node = this.currentNode(nodes);
-			turn(node);
-			infectOrClean(node, nodes);
+			changeStateAndWay(node, nodes);
 			move();
 		}
 		
-		private void infectOrClean(Node node, List<Node> nodes) {
-			if (node == null) {
-				infect(nodes);
+		private void changeStateAndWay(Node node, List<Node> nodes) {
+			switch (node.state) {
+				case CLEAN:
+					turnLeft();
+					node.state = State.WEAKENED;
+					break;
+				case WEAKENED:
+					node.state = State.INFECTED;
+					infections ++;
+					break;
+				case INFECTED:
+					turnRight();
+					node.state = State.FLAGGED;
+					break;
+				case FLAGGED:
+					goBack();
+					nodes.remove(node);
+					break;
 			}
-			else {
-				clean(node, nodes);
-			}
-		}
-		
-		private void infect(List<Node> nodes) {
-			nodes.add(new Node(x, y));
-			infections ++;
-		}
-		
-		private void clean(Node node, List<Node> nodes) {
-			nodes.remove(node);
 		}
 		
 		private Node currentNode(List<Node> nodes) {
 			return nodes.stream()
-				.filter(node -> node.x == this.x && node.y == this.y)
+				.filter(n -> n.x == this.x && n.y == this.y)
 				.findFirst()
-				.orElse(null);
-		}
-		
-		private void turn (Node node) {
-			if (node == null) {
-				turnLeft();
-			}
-			else {
-				turnRight();
-			}
+				.orElseGet(() -> {
+					Node node = Node.newCleanNode(x, y);
+					nodes.add(node);
+					return node;
+				});
 		}
 
 		private void move() {
@@ -155,6 +172,23 @@ public class Jour22_2 {
 					break;
 				case WEST:
 					way = Way.NORTH;
+					break;
+			}
+		}
+		
+		private void goBack() {
+			switch (way) {
+				case NORTH:
+					way = Way.SOUTH;
+					break;
+				case EAST:
+					way = Way.WEST;
+					break;
+				case SOUTH:
+					way = Way.NORTH;
+					break;
+				case WEST:
+					way = Way.EAST;
 					break;
 			}
 		}
