@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class Jour22 {
+public class Jour22_1 {
 
 	public static void main(String[] args) throws IOException {
-		Jour22 jour = new Jour22();
+		Jour22_1 jour = new Jour22_1();
 		System.out.println("Jour22");
 		System.out.println("1. " + jour.ex1(10_000, "src/main/resources/input22"));
 	}
