@@ -14,6 +14,7 @@ public class Jour23 {
 		Jour23 jour = new Jour23();
 		System.out.println("Jour23");
 		System.out.println("1. " + jour.ex1("src/main/resources/input23"));
+		System.out.println("2. " + jour.ex2("src/main/resources/input23"));
 	}
 	
 	public long ex1(String path) throws IOException {
@@ -25,6 +26,21 @@ public class Jour23 {
 			instruction.execute(registry);
 		}
 		return registry.mulNumber;
+	}
+	
+	public long ex2(String path) throws IOException {
+		List<Instruction> instructions = instructions(path);
+		int numberOfInstructions = instructions.size() - 1;
+		Registry registry = new Registry();
+		registry.vars.put("a", 1L);
+		while (registry.index >= 0 && registry.index <= numberOfInstructions) {
+			Instruction instruction = instructions.get(registry.index);
+//			System.out.println(instruction);
+//			System.out.println(registry.vars);
+			instruction.execute(registry);
+		}
+		return registry.vars.get("h");
+//		return -1;
 	}
 	
 	private static List<Instruction> instructions(String path) throws IOException {
