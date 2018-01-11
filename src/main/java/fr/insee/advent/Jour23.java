@@ -29,18 +29,22 @@ public class Jour23 {
 	}
 	
 	public long ex2(String path) throws IOException {
-		List<Instruction> instructions = instructions(path);
-		int numberOfInstructions = instructions.size() - 1;
-		Registry registry = new Registry();
-		registry.vars.put("a", 1L);
-		while (registry.index >= 0 && registry.index <= numberOfInstructions) {
-			Instruction instruction = instructions.get(registry.index);
-//			System.out.println(instruction);
-//			System.out.println(registry.vars);
-			instruction.execute(registry);
+		long b = 57 * 100 + 100_000;
+		long c = b + 17_000;
+		System.out.println(String.format("b = %d, c = %d, c - b = %d", b, c, c - b));
+		long h = 1;
+		while (b < c) {
+			System.out.println(b);
+			for (int d = 2; d < b; d ++) {
+				for (int e = 2; e < b; e ++) {
+					if(e * d == b) {
+						h++;
+					}
+				}
+			}
+			b = b + 17;
 		}
-		return registry.vars.get("h");
-//		return -1;
+		return h;
 	}
 	
 	private static List<Instruction> instructions(String path) throws IOException {
