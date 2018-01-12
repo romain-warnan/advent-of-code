@@ -31,9 +31,9 @@ public class Jour23 {
 	public long ex2(String path) throws IOException {
 		long b = 57 * 100 + 100_000;
 		long c = b + 17_000;
-		long h = 0;
+		long h = 1;
 		while (b < c) {
-			if(isPrime(b)) {
+			if(!isPrime(b)) {
 				h ++;
 			}
 			b = b + 17;
