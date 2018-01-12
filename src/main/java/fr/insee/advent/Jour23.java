@@ -31,20 +31,27 @@ public class Jour23 {
 	public long ex2(String path) throws IOException {
 		long b = 57 * 100 + 100_000;
 		long c = b + 17_000;
-		System.out.println(String.format("b = %d, c = %d, c - b = %d", b, c, c - b));
-		long h = 1;
+		long h = 0;
 		while (b < c) {
-			System.out.println(b);
-			for (int d = 2; d < b; d ++) {
-				for (int e = 2; e < b; e ++) {
-					if(e * d == b) {
-						h++;
-					}
-				}
+			if(isPrime(b)) {
+				h ++;
 			}
 			b = b + 17;
 		}
 		return h;
+	}
+	
+	private boolean isPrime(long n) {
+		long sqrt = Math.round(Math.sqrt(n));
+		if(n % 2 == 0) {
+			return false;
+		}
+		for (int i = 3; i < sqrt; i = i + 2) {
+			if(n % i == 0) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	private static List<Instruction> instructions(String path) throws IOException {
