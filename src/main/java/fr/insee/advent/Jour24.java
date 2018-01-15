@@ -53,21 +53,6 @@ public class Jour24 {
 	static class Component {
 		int id, left, right;
 		
-//		Component flip() {
-//			int tmp = left;
-//			left = right;
-//			right = tmp;
-//			return this;
-//		}
-//		
-//		static Component first() {
-//			Component first = new Component();
-//			first.id = 0;
-//			first.left = 0;
-//			first.right = 0;
-//			return first;
-//		}
-		
 		boolean canFollow(int right) {
 			return this.left == right || this.right == right;
 		}
