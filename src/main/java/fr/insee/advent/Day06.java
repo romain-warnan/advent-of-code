@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 public class Day06 {
 
 	public static void main(String[] args) throws IOException {
@@ -61,13 +59,23 @@ public class Day06 {
 	private int[] reallocate(int[] input) {
 		int[] banks = Arrays.copyOf(input, input.length);
 		int max = Arrays.stream(banks).max().getAsInt();
-		int indexOfMax = ArrayUtils.indexOf(banks, max);
+		int indexOfMax = indexOf(banks, max);
 		banks[indexOfMax] = 0;
 		for (int n = 0; n < max; n++) {
 			banks[(indexOfMax + n + 1) % banks.length] ++;
 		}
 		return banks;
 	}
+	
+	private int indexOf(int[] banks, int max) {
+		for (int index = 0; index < banks.length; index ++) {
+			if (banks[index] == max) {
+				return index;
+			}
+		}
+		return -1;
+	}
+	
 	
 	public static class Memory {
 
