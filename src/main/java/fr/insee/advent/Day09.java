@@ -6,8 +6,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class Day09 {
 
 	public static void main(String[] args) throws IOException {
@@ -108,8 +106,7 @@ public class Day09 {
 	}
 	
 	private long nonCanceledChars(String garbage) {
-		garbage = StringUtils.removeStart(garbage, "<");
-		garbage = StringUtils.removeEnd(garbage, ">");
+		garbage = garbage.substring(1, garbage.length() - 1);
 		char[] chars = garbage.toCharArray();
 		int score = 0;
 		for (int n = 0; n < chars.length; n++) {
