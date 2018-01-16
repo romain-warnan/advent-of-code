@@ -1,7 +1,5 @@
 package fr.insee.advent;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -25,9 +23,6 @@ public class Day01 {
     }
 
     public int captcha(String input, int step) {
-        if(StringUtils.length(input) < 2) {
-            return 0;
-        }
         int length = input.length();
         int score = 0;
         for(int n = 0 ; n < length ; n ++) {
