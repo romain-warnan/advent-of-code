@@ -3,8 +3,6 @@ package fr.insee.advent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,14 +34,11 @@ public class Day21 {
 			.map(Rule::fromLine)
 			.collect(Collectors.toList());
 
-		Instant starts = Instant.now();
 		boolean[][] image = originalImage;
 		for (int n = 0;  n < iterations; n++) {
 			image = this.applyRules(image, rules);
 			
 		}
-		Instant ends = Instant.now();
-		System.out.println(Duration.between(starts, ends));
 		return countPixels(image);
 	}
 
@@ -57,17 +52,6 @@ public class Day21 {
 			}
 		}
 		return count;
-	}
-	
-	static void print(boolean[][] pattern) {
-		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i < pattern.length; i++) {
-			for (int j = 0; j < pattern[0].length; j++) {
-				builder.append(pattern[i][j] ? '#' : '.');
-			}
-			builder.append('\n');
-		}
-		System.out.println(builder.toString());
 	}
 	
 	boolean[][] applyRules(boolean[][] image, List<Rule> rules) {
